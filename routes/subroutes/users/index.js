@@ -18,7 +18,7 @@ const router = express.Router(),
             }
         })
     };
-const oldUsers = JSON.parse(fs.readFileSync('oldUsers.json', 'utf-8'))
+// const oldUsers = JSON.parse(fs.readFileSync('oldUsers.json', 'utf-8'))
 let sgApi;
 if (fs.existsSync('sparky.json')) {
     sparkyConf = JSON.parse(fs.readFileSync('sparky.json', 'utf-8'));

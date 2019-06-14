@@ -46,3 +46,54 @@ have thing to prevent winning 2x in a row
 'paid' lottos
 
 //htgeo
+
+// emblem data:
+// foreground: 191
+
+// dave account api:B9DE7B9E-9DAD-2C40-BECD-12F9BA931FE0851EA3EB-B1AA-4FBB-B4BE-CCDD28F51644
+// dave guild id: 290CF39A-8BA9-E411-8290-AC162DAE0BED
+
+// info:
+const daveGuild = {
+    id: '290CF39A-8BA9-E411-8290-AC162DAE0BED',
+    name: 'Midgets With Widgets',
+    tag: 'OhNo',
+    emblem: {
+        background: {
+            id: 23,
+            colors: [
+                473 //abyss 
+            ]
+        },
+        foreground: {
+            id: 78,
+            colors: [
+                4,
+                132
+            ]
+        },
+        flags: []
+    }
+}
+
+const momoGuild = {
+    id: '9C9C15D3-BF9C-E811-81A8-C983E8889009',
+    name: 'Hidden Tyria Geographic Society',
+    tag: 'GEO',
+    emblem: {
+        background: {
+            id: 27,
+            colors: [
+                473 //abyss 
+            ]
+        },
+        foreground: {
+            id: 191,
+            colors: [
+                112, //orange
+                137 //turquoise
+            ]
+        },
+        flags: []
+    }
+}

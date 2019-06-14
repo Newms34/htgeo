@@ -1,10 +1,10 @@
 const socket = io(),
-    app = angular.module('brethren-app', ['ui.router', 'ngAnimate', 'ngSanitize','chart.js']),
+    app = angular.module('htgeo-app', ['ui.router', 'ngAnimate', 'ngSanitize', 'chart.js']),
     resetApp = angular.module('reset-app', []);
 
 const defaultPic = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHEAAACNCAIAAAAPTALlAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAANsSURBVHhe7dVRduIwEETR7GkWmK1HhMch9giw1dWyZNf9mZwM2F3vJ1//TM1N9dxUz0313FTPTfVGb/r9Fh8azIhNCbYTXx7AWE3JE8CDDjVEU3pI8egjHN+UBgl4QXdHNmV6Ml7W0WFNWdwFr+zlgKYM7Y7X5+vdlH0H4YhkXZuy7FCckqlfUzYNgIPSdGrKmmFwVo6LNi24LEGPpowYDMclSG/KgiFxotqlmxZcKZXblMMHxqFSiU25enicq+OmN1wsktWUYyfB0SJuesPRIilNuXQqnK7gpuB0BX1TbpwQA8Lc9IkBYW66wIYYcVNOmxYzYtx0gRkxbrrAjBhlU+6aHGMC3HSNMQFuusaYADddY0yAm64xJsBNK9jTStaUc06BSa3ctIJJrdy0gkmt3LSCSa3ctIJJrdy0gkmt3LSCSa3ctIJJrdy0gkmt3LSCSa3ctIJJrWRNCy6aH3tauekaYwLcdI0xAW66xpgAN11jTICbrjEmQNm04K5pMSPGTReYEeOmC8yIcdMFZsSImxZcNyEGhLnpEwPC9E0LbpwKpyu4KThdIaVpwaWT4GgRN73haBE3veFokaymBfcOj3N1EpsWXD0wDpVyU73cpgW3D4kT1dKbFiwYDMcl6NG0YMdIuCzBRZtyVo5OTQvWDICD0vRrWrDpUJySqWvTgmUH4YhkvZsW7OuO1+e7SlPe3cXl/kZxTaZOTRk0Bm5Kk96UHePhvgS5TTl/YBwqldWUk2fAxTopTTl2HtwtIm7KjXNiQ5iyKafNjCUxsqYcNT/2BGiacs5ZsKqVoCmHnAvbmkSbcsIZsXC/UFNefl7s3Km9Ka89O9bu0diUF14DmzdracqrroTl27jpJizfZndTXnI97N9gX1Mef1VU+GRHUx58bbR4y033ocVbW5vySNuQdVNTHmYPdHnBTVvQ5YXPTXmMLVGnxk0bUafmQ1MeYDU0+s+7pnzVXqPUkpuGUGrpZVO+ZJ/Q6w83jaLXH24qQLKHelM+a9tQ7cFNBaj2UGnKB20P2v1yUw3a/Vo35SO2HwXdVIiCbipEwVVT/tNa3TO6qdI9o5sq3TO6qVjJ+GzK7yymlHRTsVLSTcVKSZryC1NwUz031XNTPTfVuzXlRxNxUz031XNTPTfVc1M9N9VzU70v/jWV7+8ffZYE08zo+Y8AAAAASUVORK5CYII=';
 
-Array.prototype.findUser = function(u) {
+Array.prototype.findUser = function (u) {
     for (var i = 0; i < this.length; i++) {
         if (this[i].user == u) {
             return i;
@@ -13,36 +13,38 @@ Array.prototype.findUser = function(u) {
     return -1;
 }
 let hadDirect = false;
-const dcRedirect = ['$location', '$q', '$injector', function($location, $q, $injector) {
+const dcRedirect = ['$location', '$q', '$injector', function ($location, $q, $injector) {
     //if we get a 401 response, redirect to login
     let currLoc = '';
     return {
-        request: function(config) {
+        request: function (config) {
             // console.log('STATE', $injector.get('$state'));
             currLoc = $location.path();
             return config;
         },
-        requestError: function(rejection) {
+        requestError: function (rejection) {
             return $q.reject(rejection);
         },
-        response: function(result) {
+        response: function (result) {
             return result;
         },
-        responseError: function(response) {
-            console.log('Something bad happened!', response,currLoc, $location.path())
+        responseError: function (response) {
+            console.log('Something bad happened!', response, currLoc, $location.path())
             hadDirect = true;
-            bulmabox.alert(`App Restarting`, `Hi! I've made some sort of change just now to make this app more awesome! Unfortunately, this also means I've needed to restart it. I'm gonna log you out now.`, function(r) {
+            bulmabox.alert(`App Restarting`, `Hi! I've made some sort of change just now to make this app more awesome! Unfortunately, this also means I've needed to restart it. I'm gonna log you out now.`, function (r) {
                 fetch('/user/logout')
-                    .then(r=>{
-                    hadDirect = false;
-                    $state.go('appSimp.login', {}, { reload: true })
-                    return $q.reject(response);
-                })
+                    .then(r => {
+                        hadDirect = false;
+                        $state.go('appSimp.login', {}, {
+                            reload: true
+                        })
+                        return $q.reject(response);
+                    })
             })
         }
     }
 }];
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
         $locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/404');
         $stateProvider
@@ -118,18 +120,18 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
         //http interceptor stuffs!
         // $httpProvider.interceptors.push(dcRedirect)
     }])
-    .directive("fileread", [function() {
+    .directive("fileread", [function () {
         return {
             scope: {
                 fileread: "="
             },
-            link: function(scope, element, attributes) {
-                element.bind("change", function(changeEvent) {
+            link: function (scope, element, attributes) {
+                element.bind("change", function (changeEvent) {
                     const reader = new FileReader(),
                         theFile = changeEvent.target.files[0],
                         tempName = theFile.name;
                     console.log('UPLOADING FILE', theFile);
-                    reader.onload = function(loadEvent) {
+                    reader.onload = function (loadEvent) {
                         let theURI = loadEvent.target.result;
                         console.log('URI before optional resize', theURI, theURI.length)
                         if (scope.$parent.needsResize) {
@@ -137,16 +139,16 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
                             resizeDataUrl(scope, theURI, scope.$parent.needsResize, scope.$parent.needsResize, tempName);
                         } else {
                             console.log('APPLYING file to $parent')
-                            scope.$apply(function() {
-                                if(scope.$parent && scope.$parent.$parent && scope.$parent.$parent.avas){
+                            scope.$apply(function () {
+                                if (scope.$parent && scope.$parent.$parent && scope.$parent.$parent.avas) {
 
-                                scope.$parent.$parent.loadingFile = false;
-                                scope.$parent.$parent.fileName = 'Loaded:' + tempName;
-                                scope.$parent.$parent.fileread = theURI;
-                                }else{
+                                    scope.$parent.$parent.loadingFile = false;
+                                    scope.$parent.$parent.fileName = 'Loaded:' + tempName;
+                                    scope.$parent.$parent.fileread = theURI;
+                                } else {
                                     scope.$parent.loadingFile = false;
-                                scope.$parent.fileName = 'Loaded:' + tempName;
-                                scope.$parent.fileread = theURI;
+                                    scope.$parent.fileName = 'Loaded:' + tempName;
+                                    scope.$parent.fileread = theURI;
                                 }
                                 if (scope.$parent.saveDataURI && typeof scope.$parent.saveDataURI == 'function') {
                                     scope.$parent.saveDataURI(dataURI);
@@ -155,7 +157,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
                         }
                     }
                     if (!theFile) {
-                        scope.$apply(function() {
+                        scope.$apply(function () {
                             scope.fileread = '';
                             scope.$parent.fileName = false;
                             scope.$parent.loadingFile = false;
@@ -172,17 +174,17 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
         }
     }]);
 
-Array.prototype.rotate = function(n) {
+Array.prototype.rotate = function (n) {
     let arrCop = angular.copy(this);
     for (var i = 0; i < n; i++) {
         arrCop.push(arrCop.shift());
     }
     return arrCop;
 };
-Date.prototype.dyMo = function() {
+Date.prototype.dyMo = function () {
     return (this.getMonth() + 1) + '/' + this.getDate();
 }
-String.prototype.titleCase = function() {
+String.prototype.titleCase = function () {
     return this.split(/\s/).map(t => t.slice(0, 1).toUpperCase() + t.slice(1).toLowerCase()).join(' ');
 }
 
@@ -191,7 +193,7 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     const img = document.createElement('img');
 
     // When the event "onload" is triggered we can resize the image.
-    img.onload = function() {
+    img.onload = function () {
         // We create a canvas and get its context.
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -204,7 +206,7 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
         ctx.drawImage(this, 0, 0, wantedWidth, wantedHeight);
 
         const dataURI = canvas.toDataURL();
-        scope.$apply(function() {
+        scope.$apply(function () {
             scope.$parent.loadingFile = false;
             scope.$parent.fileName = 'Loaded:' + tempName;
             scope.fileread = dataURI;
