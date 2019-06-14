@@ -1,0 +1,343 @@
+<div ng-controller='dash-cont'>
+    <!--     ITEMS ON DASHBOARD: admin panel table (list of users, with buttons to ban/unban and make admin. NO button to 'unadmin'). list of chars on this acct msg center -->
+    <h3 class='is-size-4 is-full'>Dashboard: {{user.user}}</h3>
+    <div class='tabs is-fullwidth is-boxed'>
+        <ul class='is-flex-mobile'>
+            <li ng-repeat='tab in tabs' ng-class='{"is-active":currTab==tab.name}'>
+                <a href="#" ng-click='showTab(tab.name)' class=''>
+                    <i class="fa fa-{{tab.icon}}"></i>&nbsp;
+                    <span class="is-hidden-mobile">{{tab.name}}</span>&nbsp;
+                    <div class='button is-small is-rounded has-background-danger' ng-if='tab.name=="Mail" && numUnreadMsgs' title='You have {{numUnreadMsgs}} unread message{{numUnreadMsgs>1?"s":""}}!'>{{numUnreadMsgs}}</div>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <!--  <div class='is-fullwidth is-boxed is-hidden-tablet full-tab'>
+        <div ng-repeat='tab in tabs' ng-class='{"is-active":currTab==tab.name}'>
+            <a href="#" ng-click='showTab(tab.name)' class=''>
+                    <i class="fa fa-{{tab.icon}}"></i>&nbsp;
+                    {{tab.name}}
+                </a>
+        </div>
+    </div> -->
+    <!--     <div class='columns is-8 has-text-white'> -->
+    <div class="panel dash-panel" ng-show='currTab=="Profile/Characters"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class='fa fa-user'></i>&nbsp;Profile/Characters
+        </div>
+        <div class="content panel-block has-text-white">
+            <h4 class='has-text-white'>Personal Information</h4>
+            <div class="columns">
+                <div class="column is-half panel">
+                    <div class='panel-heading'>General Info</div>
+                    <div class='panel-block has-background-light'>
+                        <!-- Info here: modes users likes (checkboxes) for pvp,wvw,pve,fractals,other,
+                    time zone
+                    other interests
+                    Modes/time zone will display on forum mini-profile
+                     -->
+                        <div class="panel panel-heading">
+                            <h3 class="is-size-5">Profile Picture</h3>
+                            <div class="field">
+                                <img src="{{user.avatar||defaultPic}}">
+                            </div>
+                            <div class="field">
+                                <div class="file">
+                                    <label class="file-label">
+                                        <input class='file-input' type="file" fileread="user.avatar" onchange="angular.element(this).scope().loadFile()" />
+                                        <span class="file-cta">
+                                    <span class="file-icon">
+                                        <i class="fa fa-upload"></i>
+                                    </span>
+                                        <span class="file-label">
+                                        {{fileName?fileName:'Change Profile Pic (optional)…'}}
+                                    </span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-heading">
+                            <h3 class="is-size-5">Account Info</h3>
+                            <div class="columns is-multiline">
+                                <div class="column is-one-fifth">Email: </div>
+                                <div class="field column is-four-fifths">
+                                    <p class="control has-icons-left">
+                                        <input class="input" type="text" placeholder="Email" ng-model='user.email' ng-change='emailTimer()'>
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-envelope"></i>
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class='column is-one-fifth'>Time Zone</div>
+                                <div class="column is-four-fifths">
+                                    <div class="select is-small">
+                                        <select ng-model='user.tz' ng-options='tz.value as tz.text for tz in tzs' ng-change='changeTz()'>
+                                            <!-- <option ng-repeat='tz in tzs' value='tz.abbr'>
+                                        {{tz.value}} <span class="has-text-bold">(GMT{{tz.offset < 0 ?tz.offset:'+'+tz.offset}})</span>
+                                    </option> -->
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class='column is-one-fifth'>Password</div>
+                                <div class="column is-four-fifths" ng-if='!newPwd.changin'>
+                                    <button class="button has-background-light" ng-click='newPwd.changin=true;'>Change</button>
+                                </div>
+                                <div class="field column is-four-fifths" ng-if='newPwd.changin'>
+                                    <p class="control has-icons-left">
+                                        <input class="input" type="password" placeholder="Old password" ng-model='newPwd.old'>
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-unlock-alt"></i>
+                                        </span>
+                                    </p>
+                                    <p class="control has-icons-left">
+                                        <input class="input" type="password" placeholder="New password" ng-model='newPwd.pwd'>
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-lock"></i>
+                                        </span>
+                                    </p>
+                                    <p class="control has-icons-left">
+                                        <input class="input" type="password" placeholder="New password (again)" ng-model='newPwd.pwdDup'>
+                                        <span class="icon is-small is-left">
+                                            <i class="fa fa-lock"></i>
+                                        </span>
+                                    </p>
+                                    <p class="control">
+                                        <button class="button has-background-light" ng-click='editPwd()'>Save Password</button>
+                                        <button class="button has-background-grey-darker has-text-white" ng-click='clearPwd();'>Cancel</button>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-half panel">
+                    <div class='panel-heading'>My Interests</div>
+                    <div class='panel-block has-background-light'>
+                        <!-- Info here: modes users likes (checkboxes) for pvp,wvw,pve,fractals,other,
+                    time zone
+                    other interests
+                    Modes/time zone will display on forum mini-profile
+                     -->
+                        <i>Tell us what game modes you're interested in!</i>
+                        <label class="checkbox" ng-repeat='pi in possibleInterests'>
+                            <input type="checkbox" ng-model='pi.active' ng-change='changeInterest(pi,$index)'>&nbsp;<img src="./img/interestIcons/{{pi.icon}}">&nbsp;{{pi.name}}
+                        </label>
+                        <hr>
+                        <i>Anything else we should know?</i>
+                        <label class="label">
+                            <textarea class='textarea is-fullwidth' ng-model='user.otherInfo' ng-change='setOtherInfTimer()'></textarea>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <br>
+            <h4 class='has-text-white'>Characters</h4>
+            <table class='table is-fullwidth has-background-grey-darker has-text-white'>
+                <thead>
+                    <th>Character Name</th>
+                    <th>Profession</th>
+                    <th>Race</th>
+                    <th>Level</th>
+                    <th>Notes</th>
+                    <th>&nbsp;</th>
+                </thead>
+                <tbody>
+                    <tr ng-repeat='chr in user.chars'>
+                        <td>
+                            {{chr.name}}
+                        </td>
+                        <td>
+                            <img src="./img/profs/{{chr.prof}}.png" class='char-stat-img'>&nbsp;{{chr.prof}}
+                        </td>
+                        <td><img src="./img/races/{{chr.race}}.png" class='char-stat-img'>&nbsp;{{chr.race}}</td>
+                        <td>{{chr.lvl}}</td>
+                        <td>{{chr.other}}</td>
+                        <td>
+                            <button class="button is-small is-link" title='Edit' ng-click='editChar(chr)'><i class='fa fa-pencil'></i></button>&nbsp;
+                            <button class="button is-small is-danger" title='Remove' ng-click='delChr(chr)'><i class='fa fa-times'></i></button>
+                        </td>
+                    </tr>
+                    <tr ng-if='!user.chars.length'>
+                        <td colspan='6'>
+                            You haven't added any characters! Go ahead and add some below!
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan='6'>
+                            <button class="button is-light" ng-click='addChar()'><i class='fa fa-plus'></i>&nbsp;Add Character</button>&nbsp;
+                            <button class="button is-grey-md has-text-white" ng-click='autoChars()'><i class="fa fa-cogs"></i>&nbsp;Auto-Populate</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="Mail"'>
+        <!-- Mail panel -->
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-envelope"></i>&nbsp; Mail
+        </div>
+        <div class="panel-block has-text-white">
+            <div class="columns">
+                <!-- <div class="column is-one-fifth"></div> -->
+                <div class="column is-four-fifths">
+                    <h3 class="is-size-5">Inbox</h3>
+                    <table class="is-fullwidth table has-text-white has-background-grey-darker">
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>From</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat='msg in user.msgs'>
+                                <td><i class="fa fa-exclamation-triangle" ng-if='msg.isRep' title="You've reported this message."></i></td>
+                                <td ng-class='{"has-text-danger":msg.from=="System"}'>
+                                    {{msg.from}}
+                                </td>
+                                <td>
+                                    {{msg.date|numToDate}}
+                                </td>
+                                <td>
+                                    <button class="button is-small is-info" title='View Message' ng-click='viewMsg(msg)'>
+                                        <i class="fa fa-eye"></i>
+                                    </button>&nbsp;
+                                    <button class="button is-small is-default" title='Delete Message' ng-click='delMsg(msg)'>
+                                        <i class="fa fa-trash"></i>
+                                    </button>&nbsp;
+                                    <button class="button is-small is-danger" title='Report Message' ng-click='repMsg(msg)' ng-disabled='msg.isRep' ng-show='msg.from!="System"'>
+                                        <i class="fa fa-exclamation"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr ng-if='!user.msgs.length'>
+                                <td colspan='4'>
+                                    <i>
+                                    You have no messages right now!
+                                    </i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <h3 class="is-size-5">Outbox</h3>
+                    <table class="is-fullwidth table has-text-white has-background-grey-darker">
+                        <thead>
+                            <tr>
+                                <th>&nbsp;</th>
+                                <th>To</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat='msg in user.outBox'>
+                                <td><i class="fa fa-exclamation-triangle" ng-if='msg.isRep' title='This message was reported to the moderator team'></i></td>
+                                <td>
+                                    {{msg.to}}
+                                </td>
+                                <td>
+                                    {{msg.date|numToDate}}
+                                </td>
+                                <td>
+                                    <button class="button is-small is-info" title='View Message' ng-click='viewMsg(msg,true)'>
+                                        <i class="fa fa-eye"></i>
+                                    </button>&nbsp;
+                                    <button class="button is-small is-default" title='Delete Message' ng-click='delMyMsg(msg)'>
+                                        <i class="fa fa-trash"></i>
+                                    </button>&nbsp;
+                                </td>
+                            </tr>
+                            <tr ng-if='!user.outBox.length'>
+                                <td colspan='4'>
+                                    <i>
+                                    You have no messages right now!
+                                    </i>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="Upcoming Events"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-calendar"></i>&nbsp;Upcoming Events
+        </div>
+        <div class="panel-block has-text-white">
+            <div class='is-fullwidth thrd-inst pokey' ng-repeat='ev in latestEvents' ng-click='viewEvent(ev)'>
+                <span>{{ev.title}}</span>
+                <span>{{ev.createDate|numToDate}}</span>
+            </div>
+            <div class="is-fullwidth" ng-if='!latestEvents.length'>No current events!</div>
+        </div>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="Members"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-users"></i>&nbsp; Members
+        </div>
+        <div class="panel-block has-text-white">
+            <table class="table is-fullwidth has-background-grey-darker has-text-white">
+                <thead>
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Name
+                            <button class='button is-tiny is-grey' ng-click='memNameSort=!memNameSort'><i class="fa fa-caret-up" ng-if='memNameSort'></i><i class="fa fa-caret-down" ng-if='!memNameSort'></i></button>
+                        </th>
+                        <th>Send Message</th>
+                        <th>Characters
+                            <button class="button is-tiny" ng-click='charSearchToggle=!charSearchToggle'><i class="fa fa-search"></i></button>
+                            <input type="text" class='input hideable-input' ng-model='charSearch' ng-class="{'hide-input':!charSearchToggle}">
+                        </th>
+                        <th>Game Modes
+                            <button class="button is-tiny" ng-click='intSearchToggle=!intSearchToggle'><i class="fa fa-search"></i></button>
+                            <div class='hideable-input card' ng-class="{'hide-input':!intSearchToggle}">
+                                <h4>Sort by Game Mode</h4>
+                                <button class='button is-small int-srch-btn' title='{{pi.name}}' ng-repeat='pi in possibleInterests' style='background-image: url("./img/interestIcons/{{pi.icon}}");' ng-class="{'has-background-grey-darker':pickedInts[$index]==true}" ng-click='pickedInts[$index]=!pickedInts[$index]'>&nbsp;</button>
+                                <br>
+                                <button class='button has-background-grey' ng-click='pickedInts=[false,false,false,false,false,false]'>Reset</button>
+                            </div>
+                        </th>
+                        <th>Acct Status</th>
+                        <th>Other Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat='u in allUsers|filter:memFilter | orderBy:name:memNameSort' ng-if='u.user!=user.user || showDups'>
+                        <td><i class="fa fa-circle" style='color:{{u.online?"#0f0":"#300"}};' title='{{u.user}} is {{u.online?"":"not "}}online!'></i></td>
+                        <td><img class='usr-list-pic' src="{{u.avatar||defaultPic}}">
+                            <br>{{u.user}}</td>
+                        <td>
+                            <button class="button is-info is-fullwidth" title='Send a message to this user' ng-click='mail(u)'><i class="fa fa-envelope-o"></i></button>
+                        </td>
+                        <td style='height:150px; {{u.chars.length?"overflow-y: scroll;display:block;":""}} '>
+                            <div class='is-fullwidth chr-list' ng-repeat='chr in u.chars'>
+                                <div class='is-fullwidth is-size-7'><img src="./img/races/{{chr.race}}.png" class='char-stat-img'>&nbsp;{{chr.race}}&nbsp;<img src="./img/profs/{{chr.prof}}.png" class='char-stat-img'>&nbsp;{{chr.prof}}&nbsp;</div>
+                                <div class='is-fullwidth'>
+                                    {{chr.name}} ({{chr.lvl}})</div>
+                            </div>
+                        </td>
+                        <td>
+                            <img src="./img/interestIcons/{{intr.icon}}" title='{{intr.name}}' ng-repeat='intr in possibleInterests' ng-if='u.ints[$index]=="1"'>
+                        </td>
+                        <td>
+                            <button ng-if='user.mod' class="button is-success" ng-disabled='u.mod' title='{{u.mod?"This user is already a moderator":"Make this user a moderator"}}' ng-click='makeMod(u)'>Make Moderator</button>
+                            <button ng-if='user.mod' class="button is-danger" ng-disabled='u.mod' title='{{u.mod?"Cannot ban/unban a moderator!":"Ban/Unban this user"}}' ng-click='toggleBan(u)'>{{u.isBanned?'Unban':'Ban'}}</button>
+                            <i class='fa fa-square-o' ng-if='!user.mod && !u.mod'></i><i class='fa fa-check-square-o' ng-if='!user.mod && u.mod'></i>
+                            <i class='fa fa-square-o' ng-if='!user.mod && !u.isBanned'></i><i class='fa fa-check-square-o' ng-if='!user.mod && u.isBanned'></i>
+                            <button ng-if='user.mod && !u.confirmed' class='button is-info' ng-click='confirmUsr(u);'>
+                                Confirm User
+                            </button>
+                        </td>
+                        <td>
+                            {{u.otherInfo||'No other info!'}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

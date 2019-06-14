@@ -1,0 +1,52 @@
+<div ng-controller='forum-cont' class='columns'>
+    <div class="column is-one-fifth"></div>
+    <div class="column is-three-fifths">
+        <div class="panel">
+            <div class="panel-heading has-text-white has-background-grey-darker">
+                Forums <button class='button is-pulled-right is-light is-small' ng-class='{"has-background-grey-darker has-text-white":searchin}' ng-click='searchin=!searchin'><i class="fa fa-search"></i></button>
+            </div>
+            <div class='panel-block has-text-white has-background-grey-dark hideable-panel' ng-class='{"hide-panel":searchin}'>
+                <table class='table striped has-background-grey is-fullwidth has-text-white'>
+                    <thead>
+                        <tr>
+                            <th>
+                                Threads
+                            </th>
+                            <th>
+                                Category
+                            </th>
+                            <th>
+                                Last Post
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat='c in forObj track by $index' class='pokey thrd-inst' ng-click='goCat(c.name)'>
+                            <td>{{c.count}}</td>
+                            <td>{{c.name.titleCase()}}</td>
+                            <td>{{c.time.toLocaleString()||'N/A'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="panel-block has-text-white has-background-grey-darker hideable-panel" ng-class='{"hide-panel":!searchin}'>
+            	<input class="input" type='text' placeholder='Enter some search terms' ng-model='search' ng-change='doSearch()'></input>
+            	<br><br>
+            	<div class='message is-light' ng-if='searchResults && searchResults.thrds && searchResults.thrds.length'>
+            		<div class="message-header">Threads</div>
+            		<div class="message-body has-background-grey has-text-white">
+            			<div class="notification has-background-grey-darker pokey" ng-repeat='thrd in searchResults.thrds' ng-bind-html='thrd.title' ui-sref='app.forumThr({t:thrd._id,c:thrd.grp})'></div>
+            		</div>
+            	</div>
+            	<div class='message is-light' ng-if='searchResults && searchResults.psts && searchResults.psts.length'>
+            		<div class="message-header">Posts</div>
+            		<div class="message-body has-background-grey has-text-white">
+            			<!-- {{searchResults.psts}} -->
+            			<div class="notification has-background-grey-darker pokey" ng-repeat='pst in searchResults.psts' ng-bind-html='pst.text' ui-sref='app.forumThr({t:pst.thread,c:pst.thrGrp})'></div>
+            		</div>
+            	</div>
+            	<br>
+            </div>
+        </div>
+    </div>
+</div>

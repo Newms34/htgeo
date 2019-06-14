@@ -1,0 +1,36 @@
+<nav class="navbar is-dark is-fixed-top" role="navigation" aria-label="main navigation" ng-controller='nav-cont'>
+    <div class="navbar-brand">
+        <a role="button" class="navbar-burger"  ng-class='{"is-active":mobActive}' aria-label="menu" aria-expanded="false" ng-click='mobActive=!mobActive'>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+    <div class="navbar-menu" ng-class='{"is-active":mobActive}' ng-click='mobActive=false'>
+        <div class="navbar-start">
+            <a class="navbar-item" href='#' ui-sref-active ='pg-active' ui-sref='app.dash'>
+                <h3>Dashboard</h3>
+            </a>
+            <a class="navbar-item" href='#' ui-sref-active ='pg-active' ui-sref='app.calendar'>
+                <h3>Calendar</h3>
+            </a>
+            <a class="navbar-item" href='#' ui-sref-active ='pg-active' ui-sref='app.chat'>
+                <h3>Chat</h3>
+            </a>
+            <a class="navbar-item" href='#' ui-sref-active ='pg-active' ui-sref='app.forum'>
+                <h3>Forums</h3>
+            </a>
+            <a class="navbar-item" href='#' ui-sref-active ='pg-active' ui-sref='app.tools'>
+                <h3>Tools</h3>
+            </a>
+            <a class="navbar-item" href='#' ui-sref-active ='pg-active' ui-sref='app.help'>
+                <h3>Help</h3>
+            </a>
+        </div>
+        <div class="navbar-end">
+            <a class="navbar-item is-pulled-right" ng-click='logout()'>
+                <h3>logout</h3>
+            </a>
+        </div>
+    </div>
+</nav>

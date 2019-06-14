@@ -1,0 +1,218 @@
+<div ng-controller='tool-cont'>
+    <!--     ITEMS ON DASHBOARD: admin panel table (list of users, with buttons to ban/unban and make admin. NO button to 'unadmin'). list of chars on this acct msg center -->
+    <h3 class='is-size-4 is-full'>Tools</h3>
+    <div class='tabs is-fullwidth is-boxed'>
+        <ul class='is-flex-mobile'>
+            <li ng-repeat='tab in tabs' ng-class='{"is-active":currTab==tab.name}'>
+                <a href="#" ng-click='showTab(tab.name)' class=''>
+                    <i class="fa fa-{{tab.icon}}"></i>&nbsp;
+                    <span class="is-hidden-mobile">{{tab.name}}</span>&nbsp;
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="Dailies"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-calendar-check-o"></i>&nbsp;Available Dailies
+        </div>
+        <div class="panel-block has-text-white">
+            <div class="notification has-background-grey-darker">Restrict by:&nbsp;
+                <button class='button is-light' ng-class='{"has-background-grey-lighter":dailyRestrict.pve}' ng-click='dailyRestrict.pve=!dailyRestrict.pve;regetDaily()'><i class="fa fa-square-o" ng-if='!dailyRestrict.pve'></i><i class="fa fa-check-square-o" ng-if='dailyRestrict.pve'></i> PvE
+                </button>
+                <button class='button is-light' ng-class='{"has-background-grey-lighter":dailyRestrict.pvp}' ng-click='dailyRestrict.pvp=!dailyRestrict.pvp;regetDaily()'><i class="fa fa-square-o" ng-if='!dailyRestrict.pvp'></i><i class="fa fa-check-square-o" ng-if='dailyRestrict.pvp'></i> PvP
+                </button>
+                <button class='button is-light' ng-class='{"has-background-grey-lighter":dailyRestrict.wvw}' ng-click='dailyRestrict.wvw=!dailyRestrict.wvw;regetDaily()'><i class="fa fa-square-o" ng-if='!dailyRestrict.wvw'></i><i class="fa fa-check-square-o" ng-if='dailyRestrict.wvw'></i> WvW
+                </button>
+                <button class='button is-light' ng-class='{"has-background-grey-lighter":dailyRestrict.fractals}' ng-click='dailyRestrict.fractals=!dailyRestrict.fractals;regetDaily()'><i class="fa fa-square-o" ng-if='!dailyRestrict.fractals'></i><i class="fa fa-check-square-o" ng-if='dailyRestrict.fractals'></i> Fractals
+                </button>
+                <button class='button is-light' ng-class='{"has-background-grey-lighter":dailyRestrict.special}' ng-click='dailyRestrict.special=!dailyRestrict.special;regetDaily()'><i class="fa fa-square-o" ng-if='!dailyRestrict.special'></i><i class="fa fa-check-square-o" ng-if='dailyRestrict.special'></i> Special
+                </button>
+                <br>
+                <br>
+                When?:<div class="toggle-bg" style='width:200px;'>
+                    <div class="toggle-slider is-pulled-left" ng-class="{'is-pulled-right':tmrw}" ng-click='tmrw=!tmrw; regetDaily()'>{{tmrw?'Tomorrow':'Today'}}</div>
+                </div>
+            </div>
+            <div class="tile is-ancestor" style='flex-wrap:wrap;'>
+                <div class="tile is-6 is-12-mobile is-parent" ng-repeat='d in dailies'>
+                    <article class='tile is-child box achieve-box columns'>
+                        <div class="column is-one-fifth" ng-if='d.icon'>
+                            <img src="{{d.icon}}">
+                        </div>
+                        <div class="column is-four-fifths" ng-class='{"is-full":!d.icon}'>
+                            <p class="is-size-5">{{d.name}}</p>
+                            <p class="is-italic">{{d.description}}</p>
+                            <p class="notification has-background-grey-darker">{{d.requirement}}</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="Tier Six Material Conversion"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-money"></i>&nbsp;Tier Six Material Conversion
+        </div>
+        <div class="panel-block has-text-white">
+            <i>Instructions</i>:
+            <br> Use this tool to determine if upgrading a Tier 5 material (i.e., <img src="https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png" class='tiny-img'> Vial of Potent Blood) to Tier 6 materials (i.e., <img src="https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png" class='tiny-img'> Vial of Powerful Blood) is profitable.
+            <br>The general formula (using Blood as an example):
+            <br>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>50x</span> <img src='https://render.guildwars2.com/file/99AAE49EABF9A2415940FDB83CA1CE5E6E256020/66949.png'>
+                <br>Vial of Potent Blood
+            </div> <i class="fa fa-plus is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>1x</span> <img src='https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png'>
+                <br>Vial of Powerful Blood
+            </div> <i class="fa fa-plus is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>5x</span> <img src='https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png'>
+                <br>Pile of Crystalline Dust
+            </div><i class="fa fa-plus is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>5x</span> <img src='https://render.guildwars2.com/file/68FF9617BA1BE1AD58E83E4209AEF0FB58950702/434425.png'>
+                <br>Philosopher's Stone
+            </div><i class="fa fa-arrow-right is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>5x</span> - <span class='is-size-4'>12x</span> <img src='https://render.guildwars2.com/file/1A930A6A7B5B01EAB4CB36E79014C12B500BF6B3/66950.png'>
+                <br>Vial of Powerful Blood
+            </div>
+            <table class="table has-background-grey-darker is-fullwidth">
+                <thead>
+                    <tr class='has-text-white'>
+                        <th>Type</th>
+                        <th>T5 Material</th>
+                        <th>T6 Material</th>
+                        <th>Min Profit</th>
+                        <th>Max Profit</th>
+                        <th>Upgrade?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class='has-text-white' ng-repeat='mat in prices|filter: isMat'>
+                        <td>{{mat.sName.slice(2).titleCase()}}</td>
+                        <td>
+                            <div class='is-fullwidth'>{{mat.t5.lName}}</div>
+                            <img src="{{mat.t5.pic}}"></td>
+                        <td>
+                            <div class='is-fullwidth'>{{mat.lName}}</div>
+                            <img src="{{mat.pic}}"></td>
+                        <td>{{mat.loProf}}</td>
+                        <td>{{mat.hiProf}}</td>
+                        <td title="{{mat.profGood==1?'Upgrade this material!':(mat.profGood==-1?'Don&rsquo;t upgrade this material!':'Upgrading this material may or may not return a profit!')}}" style="color:{{mat.profGood==1?'#afa':(mat.profGood==-1?'#faa':'#ffa')}};"><i class="fa fa-{{mat.profGood==1?'thumbs-up':(mat.profGood==-1?'thumbs-down':'exclamation-triangle')}} is-size-3"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="WvW Current Match History"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-money"></i>&nbsp;WvW Current Match History
+        </div>
+        <div class="panel-block has-text-white">
+
+            <div class="columns">
+                <div class='column is-one-fifth'></div>
+                <div class='column is-three-fifths content' ng-if='!wvwDisabled'>
+                    <div class="is-fullwidth">Brethren [PAIN] currently owns: {{wvwOwned?wvwOwned.name:'Nothing'}}</div>
+                    <div class='wvw-bg'>
+                        <div class="wvw-bar red">
+                            <div class='is-pulled-left is-size-4-mobile' style='max-width:200px;' title='{{wvw.labels[0]}}'>{{wvw.labels[0].split(',')[0]}}...
+                                <br><span class='is-size-4'>+ {{wvw.victory_points.red}}</span></div>
+                            <div class="is-pulled-right is-size-4 is-size-3-mobile">{{wvw.skirmishes[currentMatch].scoreArr[0]}}</div>
+                        </div>
+                        <div class="wvw-bar green">
+                            <div class='is-pulled-left is-size-4-mobile' style='max-width:200px;' title='{{wvw.labels[1]}}'>{{wvw.labels[1].split(',')[0]}}...
+                                <br><span class='is-size-4'>+ {{wvw.victory_points.green}}</span></div>
+                            <div class="is-pulled-right is-size-4 is-size-3-mobile">{{wvw.skirmishes[currentMatch].scoreArr[1]}}</div>
+                        </div>
+                        <div class="wvw-bar blue">
+                            <div class='is-pulled-left is-size-4-mobile' style='max-width:200px;' title='{{wvw.labels[2]}}'>{{wvw.labels[2].split(',')[0]}}...
+                                <br><span class='is-size-4'>+ {{wvw.victory_points.blue}}</span></div>
+                            <div class="is-pulled-right is-size-4 is-size-3-mobile">{{wvw.skirmishes[currentMatch].scoreArr[2]}}</div>
+                        </div>
+                    </div>
+                    <div style='height:600px; position:relative;top:-300px;'>
+                        <h3 class='has-text-white has-text-centered'>
+                        <button class="button is-light is-small" ng-disabled='!currentMatch' ng-click='firstSkirm()'><i class="fa fa-angle-double-left" title='First Skirmish'></i></button> &nbsp;
+                        <button class="button is-light is-small" ng-disabled='!currentMatch' ng-click='prevSkirm()'><i class="fa fa-chevron-left" title='Previous Skirmish'></i></button> &nbsp;
+                        Skirmish ({{currentMatch+1}} of {{wvw.skirmishes.length}})&nbsp;<button class="button is-light is-small" title='Next Skirmish' ng-disabled='currentMatch && currentMatch==wvw.skirmishes.length-1' ng-click='nextSkirm()'><i class="fa fa-chevron-right"></i></button>&nbsp;
+                        <button class="button is-light is-small" title='Last Skirmish' ng-disabled='currentMatch && currentMatch==wvw.skirmishes.length-1' ng-click='lastSkirm()'><i class="fa fa-angle-double-right"></i></button> </h3>
+                        <canvas id="doughnut" class="chart chart-doughnut is-hidden-mobile" chart-data="wvw.skirmishes[currentMatch].scoreArr" chart-labels="wvw.labels" chart-options='wvwPie' chart-colors='wvwPie.backgroundColor'>
+                        </canvas>
+                        <hr>
+                        <div id="wvw-map"></div>
+                        <hr>
+                        <h3 class='has-text-white is-size-4'>Match History</h3>
+                        <canvas class="chart chart-line grey-chart" chart-data="wvw.history" chart-labels="wvw.histLabels" chart-colors='wvw.histColors' chart-series="wvw.labels" chart-options='lineOpts' chart-click='histClick'></canvas>
+                    </div>
+                </div>
+                <div class="column is-three-fifths content" ng-if='wvwDisabled'>
+                    <div class="notification has-background-grey-darker has-text-white has-text-centered is-size-5">
+                       <i class="fa is-size-1 fa-exclamation-triangle">&nbsp;</i> WvW Match History is currently disabled, as we've only recently reset!
+                       <br>
+                       <img src="./img/Valley Ruins.jpg" style='opacity:.5;'>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel dash-panel" ng-show='currTab=="Core/Lodestone Upgrade"'>
+        <div class="panel-heading has-text-white has-background-grey-darker">
+            <i class="fa fa-diamond"></i>&nbsp;Core/Lodestone Upgrade
+        </div>
+        <div class="panel-block has-text-white">
+            <i>Instructions</i>:
+            <br> Use this tool to determine if upgrading cores (i.e., <img src="https://render.guildwars2.com/file/3903CB74F8D64657FFCCAADB934AF42DFB941E6C/66957.png" class='tiny-img'> Charged Core) to a lodestone (i.e., <img src="https://render.guildwars2.com/file/02EFB1C5E11B2FF4B4AC25A84E2302D244C82AA3/66958.png" class='tiny-img'> Charged Lodestone) is profitable.
+            <br>The general formula (using Charged as an example):
+            <br>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>2x</span> <img src='https://render.guildwars2.com/file/3903CB74F8D64657FFCCAADB934AF42DFB941E6C/66957.png'>
+                <br>Charged Core
+            </div> <i class="fa fa-plus is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>1x</span> <img src='https://render.guildwars2.com/file/CC720B5A5810A84FD97AB00FA43F1679C48074DE/455843.png'>
+                <br>Bottle of Elonian Wine
+            </div> <i class="fa fa-plus is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>1x</span> <img src='https://render.guildwars2.com/file/080D00670558CD9E580D5662030394B2206E92A6/434537.png'>
+                <br>Pile of Crystalline Dust
+            </div><i class="fa fa-plus is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>1x</span> <img src='https://render.guildwars2.com/file/045C05C2F83A59FC4B6F15073465C5D3040E4DF5/65674.png'>
+                <br>Mystic Crystal
+            </div><i class="fa fa-arrow-right is-size-1"></i>
+            <div class="price-ex has-text-centered">
+                <span class='is-size-4'>1x</span> <img src='https://render.guildwars2.com/file/02EFB1C5E11B2FF4B4AC25A84E2302D244C82AA3/66958.png'>
+                <br>Charged Lodestone
+            </div>
+            <table class="table has-background-grey-darker is-fullwidth">
+                <thead>
+                    <tr class='has-text-white'>
+                        <th>Type</th>
+                        <th>Core</th>
+                        <th>Lodestone</th>
+                        <th>Min Profit</th>
+                        <th>Max Profit</th>
+                        <th>Upgrade?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class='has-text-white' ng-repeat='core in prices|filter: isGem'>
+                        <td>{{core.sName.slice(1).titleCase()}}</td>
+                        <td>
+                            <div class='is-fullwidth'>{{core.c.lName}}</div>
+                            <img src="{{core.c.pic}}"></td>
+                        <td>
+                            <div class='is-fullwidth'>{{core.lName}}</div>
+                            <img src="{{core.pic}}"></td>
+                        <td>{{core.loProf}}</td>
+                        <td>{{core.hiProf}}</td>
+                        <td title="{{core.profGood==1?'Upgrade this core!':(core.profGood==-1?'Don&rsquo;t upgrade this core!':'Upgrading this core may or may not return a profit!')}}" style="color:{{core.profGood==1?'#afa':(core.profGood==-1?'#faa':'#ffa')}};"><i class="fa fa-{{core.profGood==1?'thumbs-up':(core.profGood==-1?'thumbs-down':'exclamation-triangle')}} is-size-3"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

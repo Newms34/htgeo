@@ -1,0 +1,378 @@
+// @import '../../bower_components/font-awesome/css/font-awesome.css';
+// @import "../../bower_components/components-font-awesome/scss/font-awesome.scss";
+@import './components/bulma';
+@import './components/chat';
+@import './components/leaflet.css';
+html,
+body {
+    width: 100%;
+    margin: 0;
+    height: 100%; // padding-top: 40px;
+    // background: #000;
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../img/htgeo.svg'), #000;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+}
+
+#main-box {
+    padding-top: 60px;
+    height: 140vh;
+    color: #fff; // background: #000;
+    // background-attachment: fixed;
+}
+
+// .small-notif{
+//     padding: 0.625rem 1.25rem 0.625rem 0.75rem;
+//     display:inline-block;
+//     & label{
+//         margin-left:auto;
+//         margin-right:auto;
+//     }
+// }
+.calendar {
+    width: 90%;
+    position: relative;
+    left: 5%;
+    tbody {
+        tr {
+            &:nth-child(even) {
+                background: #eee;
+            }
+            &:nth-child(odd) {
+                background: #ddd;
+            }
+            td {
+                height: 95px;
+                &:first-child {
+                    background: #bbb;
+                }
+                &:not(:first-child) {
+                    //reserved in case i need
+                }
+            }
+        }
+    }
+}
+
+.is-tiny {
+    border-radius: 2px;
+    font-size: 0.5rem;
+}
+
+.is-fullwidth {
+    width: 100%!important;
+}
+
+.click-cell {
+    transition-duration: .2s;
+    background: hsl(0, 0%, 51%);
+    cursor: pointer;
+    &:hover {
+        background: hsl(0, 0%, 71%);
+    }
+}
+
+.no-blue-link {
+    color: #fff!important;
+    transition-duration: .2s;
+    &:hover {
+        font-weight: 500;
+    }
+}
+
+.forum-post {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    min-height: 100px;
+    width: 100%;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    color: #fff!important;
+    & h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    b,
+    em,
+    strong {
+        color: #fff;
+    }
+    & blockquote {
+        background: #333;
+    }
+    & .prof-pic {
+        width: 100px;
+        height: 100px;
+    }
+    & .post-text {
+        // height: 90%;
+    }
+    & .post-buttons {
+        border-top: 1px solid #333;
+        height: 10%;
+        min-height: 50px;
+        & button,
+        .vote-box {
+            margin: 3px;
+            &.good-vote {
+                color: #afa;
+            }
+            &.bad-vote {
+                color: #fcc;
+            }
+        }
+    }
+}
+
+.new-post-bx {
+    padding: 5px;
+    text-align: center;
+    background: #555;
+    & .button {
+        width: 30%;
+        margin-top: 5px;
+    }
+}
+
+.pokey {
+    cursor: pointer;
+}
+
+.thrd-inst {
+    transition-duration: .2s;
+    background: #222;
+    &:hover {
+        background: #444;
+    }
+}
+
+.dash-panel {
+    min-height: 50vh;
+    .panel-block {
+        height: 100%;
+    }
+}
+
+.panel-block {
+    display: block;
+}
+
+.has-text-white,
+.has-text-white th {
+    color: #fff!important;
+}
+
+.char-opt {
+    display: inline-block;
+    border-radius: 30%;
+    &>div {
+        width: 60px;
+        height: 60px;
+        background-size: contain;
+        cursor: pointer;
+        transition-duration: .2s;
+        filter: saturate(0);
+        border-radius: 30%;
+        &:hover {
+            filter: 'none';
+            box-shadow: 3px 3px 6px #333;
+        }
+    }
+    &>input {
+        visibility: hidden;
+    }
+    &>input:checked+div {
+        filter: 'none';
+        box-shadow: 3px 3px 6px #333;
+    }
+}
+
+$profs: Warrior Guardian Revenant Thief Engineer Ranger Mesmer Necromancer Elementalist;
+@each $prof in $profs {
+    .opt-#{$prof}>div {
+        background-image:url('../img/profs/#{$prof}.png');
+    }
+}
+
+$races: Asura Charr Human Norn Sylvari;
+@each $race in $races {
+    .opt-#{$race}>div {
+        background-image:url('../img/races/#{$race}.png');
+    }
+}
+
+.is-grey-md {
+    background: hsl(0, 0%, 50%);
+}
+
+.char-stat-img {
+    height: 20px;
+    width: auto;
+}
+
+.checkbox {
+    display: block;
+    transition-duration: .2s;
+    &:hover {
+        background: #eee!important;
+    }
+}
+
+.chr-list {
+    border-radius: 3px;
+    border: 1px solid #999;
+    padding: 2px;
+    text-align: center;
+}
+
+.usr-list-pic {
+    max-height: 80px;
+    width: auto;
+}
+
+#chat-container {
+    height: 80%;
+    overflow-y: scroll;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.halp {
+    background: rgba(0, 0, 0, 0.5);
+    & strong,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+        color: #fff!important;
+    }
+}
+
+.hideable-input {
+    transition-duration: .2s;
+    &.hide-input {
+        width: 0%;
+        height: 0;
+        opacity: 0%;
+    }
+    & .int-srch-btn {
+        background-size: contain;
+        background-repeat: no-repeat;
+    }
+}
+
+.achieve-box {
+    color: #fff;
+    background: #2e0c0c;
+}
+
+// .full-tab {
+//     div {
+//         border: 1px solid transparent;
+//         border-radius: 4px 4px 0 0;
+//         width: 100%;
+//         &:hover {
+//             background: #f5f5f5;
+//             border-bottom-color: #dbdbdb;
+//         }
+//     }
+// }
+.navbar-burger {
+    color: #fff!important;
+}
+
+.hideable-panel {
+    transition-duration: .2s;
+    &.hide-panel {
+        overflow: hidden;
+        width: 0;
+        height: 0;
+        padding:0;
+    }
+}
+.wvw-bg{
+    height: 300px;
+    // z-index:-1;
+    position: relative;
+    width:100%;
+    top: 120px;
+    & .wvw-bar{
+        width:100%;
+        height:33%;
+    }
+    & .red{
+        background:#600;
+    }
+    & .green{
+        background:#060;
+    }
+    & .blue{
+        background:#006;
+    }
+}
+.tiny-img{
+    width:20px;
+    height:20px;
+}
+.price-ex{
+    display:inline-block;
+    background:#333;
+    border-radius:5px;
+    padding:3px;
+    margin:5px;
+}
+.panel-block{
+    border:none!important;
+}
+.grey-chart{
+    background:#333;
+    padding-top:5px;
+}
+.is-dark-red{
+    background:#940000;
+    &:active{
+        background:#7D0000;
+    }
+    &:hover{
+        background:#890000;
+    }
+}
+.toggle-bg{
+    width:100px;
+    height:30px;
+    padding:2px;
+    border-radius:4px;
+    background:#333;
+    border: 2px inset #555;
+    .toggle-slider{
+        width:48%;
+        height:26px;
+        border-radius:4px;
+        background:#999;
+        transition-duration:.3s;
+        border:2px;
+        line-height:15px;
+        text-align:center;
+        color:#000;
+        height:100%;
+        cursor:pointer;
+        border:2px outset #999;
+        &:hover{
+            background:#aaa;
+        }
+    }
+}
+#wvw-map{
+    width:100%;
+    height:400px;
+}
+.exp-evt{
+    filter:saturate(0.4) contrast(.5);
+}
+.pg-active{
+    background:#eee;
+    color:#333!important;
+}

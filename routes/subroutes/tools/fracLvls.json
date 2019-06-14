@@ -1,0 +1,504 @@
+[
+    {
+        "Level": 1,
+        "Fractal": "Volcanic",
+        "AR": 0
+    },
+    {
+        "Level": 2,
+        "Fractal": "Uncategorized",
+        "AR": 0
+    },
+    {
+        "Level": 3,
+        "Fractal": "Snowblind",
+        "AR": 0
+    },
+    {
+        "Level": 4,
+        "Fractal": "Urban Battleground",
+        "AR": 0
+    },
+    {
+        "Level": 5,
+        "Fractal": "Swampland",
+        "AR": 0
+    },
+    {
+        "Level": 6,
+        "Fractal": "Cliffside",
+        "AR": 0
+    },
+    {
+        "Level": 7,
+        "Fractal": "Aquatic Ruins",
+        "AR": 0
+    },
+    {
+        "Level": 8,
+        "Fractal": "Underground Facility",
+        "AR": 0
+    },
+    {
+        "Level": 9,
+        "Fractal": "Molten Furnace",
+        "AR": 0
+    },
+    {
+        "Level": 10,
+        "Fractal": "Molten Boss",
+        "AR": 0
+    },
+    {
+        "Level": 11,
+        "Fractal": "Deepstone",
+        "AR": 0
+    },
+    {
+        "Level": 12,
+        "Fractal": "Uncategorized",
+        "AR": 0
+    },
+    {
+        "Level": 13,
+        "Fractal": "Chaos Isles",
+        "AR": 0
+    },
+    {
+        "Level": 14,
+        "Fractal": "Aetherblade",
+        "AR": 0
+    },
+    {
+        "Level": 15,
+        "Fractal": "Thaumanova Reactor",
+        "AR": 0
+    },
+    {
+        "Level": 16,
+        "Fractal": "Twilight Oasis",
+        "AR": 0
+    },
+    {
+        "Level": 17,
+        "Fractal": "Underground Facility",
+        "AR": 0
+    },
+    {
+        "Level": 18,
+        "Fractal": "Captain Mai Trin Boss",
+        "AR": 0
+    },
+    {
+        "Level": 19,
+        "Fractal": "Volcanic",
+        "AR": 0
+    },
+    {
+        "Level": 20,
+        "Fractal": "Solid Ocean",
+        "AR": 8
+    },
+    {
+        "Level": 21,
+        "Fractal": "Swampland",
+        "AR": 10
+    },
+    {
+        "Level": 22,
+        "Fractal": "Cliffside",
+        "AR": 11
+    },
+    {
+        "Level": 23,
+        "Fractal": "Molten Furnace",
+        "AR": 13
+    },
+    {
+        "Level": 24,
+        "Fractal": "Nightmare",
+        "AR": 15
+    },
+    {
+        "Level": 25,
+        "Fractal": "Shattered Observatory",
+        "AR": 17
+    },
+
+    {
+        "Level": 26,
+        "Fractal": "Aquatic Ruins",
+        "AR": 18
+    },
+    {
+        "Level": 27,
+        "Fractal": "Snowblind",
+        "AR": 20
+    },
+    {
+        "Level": 28,
+        "Fractal": "Volcanic",
+        "AR": 22
+    },
+    {
+        "Level": 29,
+        "Fractal": "Underground Facility",
+        "AR": 24
+    },
+    {
+        "Level": 30,
+        "Fractal": "Chaos Isles",
+        "AR": 26
+    },
+    {
+        "Level": 31,
+        "Fractal": "Urban Battleground",
+        "AR": 27
+    },
+    {
+        "Level": 32,
+        "Fractal": "Swampland",
+        "AR": 29
+    },
+    {
+        "Level": 33,
+        "Fractal": "Deepstone",
+        "AR": 31
+    },
+    {
+        "Level": 34,
+        "Fractal": "Thaumanova Reactor",
+        "AR": 33
+    },
+    {
+        "Level": 35,
+        "Fractal": "Solid Ocean",
+        "AR": 34
+    },
+    {
+        "Level": 36,
+        "Fractal": "Uncategorized",
+        "AR": 36
+    },
+    {
+        "Level": 37,
+        "Fractal": "Snowblind",
+        "AR": 38
+    },
+    {
+        "Level": 38,
+        "Fractal": "Chaos Isles",
+        "AR": 40
+    },
+    {
+        "Level": 39,
+        "Fractal": "Molten Furnace",
+        "AR": 42
+    },
+    {
+        "Level": 40,
+        "Fractal": "Molten Boss",
+        "AR": 43
+    },
+    {
+        "Level": 41,
+        "Fractal": "Twilight Oasis",
+        "AR": 45
+    },
+    {
+        "Level": 42,
+        "Fractal": "Captain Mai Trin Boss",
+        "AR": 47
+    },
+    {
+        "Level": 43,
+        "Fractal": "Underground Facility",
+        "AR": 49
+    },
+    {
+        "Level": 44,
+        "Fractal": "Uncategorized",
+        "AR": 50
+    },
+    {
+        "Level": 45,
+        "Fractal": "Solid Ocean",
+        "AR": 52
+    },
+    {
+        "Level": 46,
+        "Fractal": "Aetherblade",
+        "AR": 54
+    },
+    {
+        "Level": 47,
+        "Fractal": "Cliffside",
+        "AR": 56
+    },
+    {
+        "Level": 48,
+        "Fractal": "Thaumanova Reactor",
+        "AR": 58
+    },
+    {
+        "Level": 49,
+        "Fractal": "Nightmare",
+        "AR": 59
+    },
+    {
+        "Level": 50,
+        "Fractal": "Shattered Observatory",
+        "AR": 61
+    },
+
+    {
+        "Level": 51,
+        "Fractal": "Snowblind",
+        "AR": 63
+    },
+    {
+        "Level": 52,
+        "Fractal": "Volcanic",
+        "AR": 65
+    },
+    {
+        "Level": 53,
+        "Fractal": "Underground Facility",
+        "AR": 67
+    },
+    {
+        "Level": 54,
+        "Fractal": "Chaos Isles",
+        "AR": 68
+    },
+    {
+        "Level": 55,
+        "Fractal": "Thaumanova Reactor",
+        "AR": 70
+    },
+    {
+        "Level": 56,
+        "Fractal": "Swampland",
+        "AR": 72
+    },
+    {
+        "Level": 57,
+        "Fractal": "Urban Battleground",
+        "AR": 74
+    },
+    {
+        "Level": 58,
+        "Fractal": "Molten Furnace",
+        "AR": 75
+    },
+    {
+        "Level": 59,
+        "Fractal": "Twilight Oasis",
+        "AR": 77
+    },
+    {
+        "Level": 60,
+        "Fractal": "Solid Ocean",
+        "AR": 79
+    },
+    {
+        "Level": 61,
+        "Fractal": "Aquatic Ruins",
+        "AR": 81
+    },
+    {
+        "Level": 62,
+        "Fractal": "Uncategorized",
+        "AR": 83
+    },
+    {
+        "Level": 63,
+        "Fractal": "Chaos Isles",
+        "AR": 84
+    },
+    {
+        "Level": 64,
+        "Fractal": "Thaumanova Reactor",
+        "AR": 86
+    },
+    {
+        "Level": 65,
+        "Fractal": "Aetherblade",
+        "AR": 88
+    },
+    {
+        "Level": 66,
+        "Fractal": "Urban Battleground",
+        "AR": 90
+    },
+    {
+        "Level": 67,
+        "Fractal": "Deepstone",
+        "AR": 91
+    },
+    {
+        "Level": 68,
+        "Fractal": "Snowblind",
+        "AR": 93
+    },
+    {
+        "Level": 69,
+        "Fractal": "Cliffside",
+        "AR": 95
+    },
+    {
+        "Level": 70,
+        "Fractal": "Molten Boss",
+        "AR": 97
+    },
+    {
+        "Level": 71,
+        "Fractal": "Aetherblade",
+        "AR": 99
+    },
+    {
+        "Level": 72,
+        "Fractal": "Volcanic",
+        "AR": 100
+    },
+    {
+        "Level": 73,
+        "Fractal": "Captain Mai Trin Boss",
+        "AR": 102
+    },
+    {
+        "Level": 74,
+        "Fractal": "Nightmare",
+        "AR": 104
+    },
+    {
+        "Level": 75,
+        "Fractal": "Shattered Observatory",
+        "AR": 106
+    },
+    {
+        "Level": 76,
+        "Fractal": "Aquatic Ruins",
+        "AR": 107
+    },
+    {
+        "Level": 77,
+        "Fractal": "Swampland",
+        "AR": 109
+    },
+    {
+        "Level": 78,
+        "Fractal": "Urban Battleground",
+        "AR": 111
+    },
+    {
+        "Level": 79,
+        "Fractal": "Uncategorized",
+        "AR": 113
+    },
+    {
+        "Level": 80,
+        "Fractal": "Solid Ocean",
+        "AR": 115
+    },
+    {
+        "Level": 81,
+        "Fractal": "Underground Facility",
+        "AR": 116
+    },
+    {
+        "Level": 82,
+        "Fractal": "Cliffside",
+        "AR": 118
+    },
+    {
+        "Level": 83,
+        "Fractal": "Molten Furnace",
+        "AR": 120
+    },
+    {
+        "Level": 84,
+        "Fractal": "Deepstone",
+        "AR": 122
+    },
+    {
+        "Level": 85,
+        "Fractal": "Urban Battleground",
+        "AR": 123
+    },
+    {
+        "Level": 86,
+        "Fractal": "Snowblind",
+        "AR": 125
+    },
+    {
+        "Level": 87,
+        "Fractal": "Twilight Oasis",
+        "AR": 127
+    },
+    {
+        "Level": 88,
+        "Fractal": "Chaos Isles",
+        "AR": 129
+    },
+    {
+        "Level": 89,
+        "Fractal": "Swampland",
+        "AR": 131
+    },
+    {
+        "Level": 90,
+        "Fractal": "Molten Boss",
+        "AR": 132
+    },
+    {
+        "Level": 91,
+        "Fractal": "Uncategorized",
+        "AR": 134
+    },
+    {
+        "Level": 92,
+        "Fractal": "Volcanic",
+        "AR": 136
+    },
+    {
+        "Level": 93,
+        "Fractal": "Snowblind",
+        "AR": 138
+    },
+    {
+        "Level": 94,
+        "Fractal": "Cliffside",
+        "AR": 139
+    },
+    {
+        "Level": 95,
+        "Fractal": "Captain Mai Trin Boss",
+        "AR": 141
+    },
+    {
+        "Level": 96,
+        "Fractal": "Aetherblade",
+        "AR": 143
+    },
+    {
+        "Level": 97,
+        "Fractal": "Thaumanova Reactor",
+        "AR": 145
+    },
+    {
+        "Level": 98,
+        "Fractal": "Chaos Isles",
+        "AR": 147
+    },
+    {
+        "Level": 99,
+        "Fractal": "Nightmare",
+        "AR": 148
+    },
+    {
+        "Level": 100,
+        "Fractal": "Shattered Observatory",
+        "AR": 150
+    }
+]
