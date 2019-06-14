@@ -1,0 +1,48 @@
+STUFF TO ADD:
+---------
+
+FORUMS:
+ability to post pictures
+ - file upload better to just do with 'vanilla'angularjs? would allow connection to disable/enable btn
+-DONE!
+
+markdown help
+
+CALENDAR:
+TYPES of events (WILL need icons!): guild mish, contest, giveaway, ceremony, other
+
+
+
+----NEXT
+
+cron-ish job to purge old, non-confirmed users?
+
+priceCHeck?
+
+raffle section?
+
+k/d ratio for wvw matches?
+
+graph of % score over time for match?
+
+lastSignon stat for usrs
+
+---
+VOTING:
+
+
+do we want MULTIPLE roles (i.e., plebs who can just view, users who can view+make events, mods who can view, make events, ban+etc)
+need to ref user on report msg.
+also need usr refresh on send msg FROM "this" user
+
+take another look at online status stuff?
+change 'members' tab to 'other members'?
+
+need ability to cull old events and prevent adding events too 'late'
+
+
+have thing to prevent winning 2x in a row
+
+'paid' lottos
+
+//htgeo

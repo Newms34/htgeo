@@ -5,11 +5,11 @@ const express = require('express'),
     io = require('socket.io')(server),
     path = require('path'),
     cookieParser = require('cookie-parser'),
-    cookie = require('cookie'),
+    // cookie = require('cookie'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
-    passport = require('passport'),
-    LocalStrategy = require('passport-local').Strategy,
+    // passport = require('passport'),
+    // LocalStrategy = require('passport-local').Strategy,
     compression = require('compression');
 app.use(compression());
 
