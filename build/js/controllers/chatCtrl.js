@@ -18,6 +18,7 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         })
     }
     $scope.parseMsg = (t)=>{
+        console.log('in parseMsg', t);
     	if(t.indexOf('/wiki ')===0){
     		return `Wiki: <a href="https://wiki.guildwars2.com/wiki/${t.slice(6)}" target="_blank">${t.slice(6)}</a>`
     	}else if(t.indexOf('/google ')===0){
@@ -32,6 +33,7 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
             $scope.allUsers = au.data;
         });
     socket.on('msgOut', function(msg) {
+        console.log('before dealing with commands, full message object is',msg)
     	console.log($scope.parseMsg(msg.msg),'IS THE MESSAGE')
     	msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
         $scope.msgs.push(msg);
