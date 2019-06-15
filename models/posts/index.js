@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 //Each item in vote will last for a certain period of time. After this time is elapsed, it'll either be accepted or rejected.
-var postSchema = new mongoose.Schema({
+const postSchema = new mongoose.Schema({
     text:String,//actual TEXT of the post (may include html),
     md:String,//raw markdown (for quoting!)
     user:String,

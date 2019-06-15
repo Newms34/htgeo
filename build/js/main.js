@@ -52,6 +52,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
                 abstract: true,
                 templateUrl: 'layouts/full.html'
             })
+            .state('app.blog', {
+                url: '/blog', //default route, if not 404
+                templateUrl: 'components/blog.html'
+            })
             .state('app.dash', {
                 url: '/', //default route, if not 404
                 templateUrl: 'components/dash.html'

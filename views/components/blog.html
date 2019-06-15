@@ -1,0 +1,137 @@
+<div ng-controller='blog-cont'>
+    <div class="is-fullwidth columns">
+        <div class="column is-one-fifth"></div>
+        <div class="column is-fullheight is-three-fifths" id='blog-background'>
+            <button class="button is-link is-large" ng-if='user.mod' ng-click='newBlog.active=true'><i
+                    class="fa fa-plus"></i>Create New Post</button>
+            <hr ng-if='user.mod'>
+            <div class="message is-dark" ng-repeat='be in blogEntries'>
+                <div class="message-header" ng-if='be.pic' style='background:url("{{be.pic}}");height:{{be.height}}px;'>
+                    &nbsp;</div>
+                <div class="message-body">
+                    <div class='is-fullwidth'>
+
+                        <div style='display:inline-block;' class="is-pulled-left has-text-weight-bold">Author: &nbsp;
+                        </div>
+                        <div style='display:inline-block;' class="is-pulled-left has-text-info">{{be.author}}</div>
+                    </div>
+                    <hr class='has-background-grey-light'>
+                    <div class="is-size-3 has-text-danger">{{be.title}}</div>
+                    <div class="is-fullwidth">
+                        {{be.contents}}
+                        <br><br>
+                        <div class="is-fullwidth is-size-7">
+                            <div class="has-text-weight-bold is-pulled-left">Posted:&nbsp;</div> 
+                            <div class="is-pulled-left">
+                                {{be.when}}
+                            </div>
+                            <div class="is-pulled-right">
+                                Likes:&nbsp;{{be.likeNum}} <i class="fa fa-heart{{be.usrLiked?'':'-o'}} hover-heart" ng-click='toggleLike(be._id);'></i> 
+                            </div>
+                        </div>
+                        <hr class='has-background-grey-light'>
+                        <iframe ng-if='be.youtube' style='width:100%;' height='400' src="{{be.youtube|trusted}}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" ng-class='{"is-active":newBlog.active}'>
+        <!-- the modal view-student-exercise window -->
+        <div class="modal-background"></div>
+        <div class="modal-content wide-modal">
+            <div class="panel">
+                <div class="panel-heading has-background-grey-darker has-text-white has-text-weight-bold">
+                    Create New Blog Post
+                    <button class="button is-danger is-small is-pulled-right" ng-click='newBlog.active=false'>x</button>
+                </div>
+                <div class="panel-block has-background-white blocky content">
+                    <br>
+                    <div class="columns is-multiline">
+
+                        <div
+                            class="column is-one-fifth notification has-text-centered has-text-white has-background-grey-darker">
+                            Title
+                        </div>
+                        <div class="column is-four-fifths">
+                            <div class="field">
+                                <p class="control has-icons-right">
+                                    <input class="input" type="text" placeholder="Enter a title"
+                                        ng-model='newBlog.title'>
+                                    <span class="icon is-small is-right">
+                                        <i class="fa fa-pencil"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div
+                            class="column is-one-fifth notification has-text-centered has-text-white has-background-grey-darker">
+                            Contents
+                        </div>
+                        <div class="column is-four-fifths">
+                            <div class="field">
+                                <p class="control has-icons-right">
+                                    <textarea class="textarea" placeholder="Enter text contents of your post"
+                                        ng-model='newBlog.contents'></textarea>
+                                    <span class="icon is-small is-right">
+                                        <i class="fa fa-align-left"></i>
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div
+                            class="column is-one-fifth notification has-text-centered has-text-white has-background-grey-darker">
+                            Picture Link
+                        </div>
+                        <div class="column is-four-fifths">
+                            <i class='is-size-7'>Yes, I'm aware uploading pictures would be nice. Workin on that! -
+                                Love, Healy</i>
+                            <div class="field">
+                                <p class="control has-icons-right">
+                                    <input class="input" type="text"
+                                        placeholder="Enter the URL of a picture to include (optional)"
+                                        ng-model='newBlog.picCand' ng-keyup='picTimer();'>
+                                    <span class="icon is-small is-right">
+                                        <i class="fa fa-file-image-o"></i>
+                                    </span>
+                                </p>
+                            </div>
+                            <br>
+                            <img style='max-height:200px;' ng-if='newBlog.pic' src="{{newBlog.pic}}" alt="">
+                        </div>
+                        <hr>
+                        <div
+                            class="column is-one-fifth notification has-text-centered has-text-white has-background-grey-darker">
+                            YouTube Video
+                        </div>
+                        <div class="column is-four-fifths">
+                            <div class="field">
+                                <p class="control has-icons-right">
+                                    <input class="input" type="text"
+                                        placeholder="Enter a YouTube Video to include (optional)"
+                                        ng-model='newBlog.youtubeCand' ng-keyup='vidTimer()'>
+                                    <span class="icon is-small is-right">
+                                        <i class="fa fa-youtube-square"></i>
+                                    </span>
+                                </p>
+                            </div>
+                            <br>
+                            <iframe ng-if='newBlog.youtube' height='200' src="{{newBlog.youtube|trusted}}"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen></iframe>
+                        </div>
+                        <div class="column is-full has-text-centered">
+                            <button class="button is-link" ng-click='newPost()'>Post It!</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

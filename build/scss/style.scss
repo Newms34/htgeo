@@ -63,6 +63,9 @@ body {
 .is-fullwidth {
     width: 100%!important;
 }
+.is-fullheight {
+    min-height: 105vh;
+}
 
 .click-cell {
     transition-duration: .2s;
@@ -375,4 +378,20 @@ $races: Asura Charr Human Norn Sylvari;
 .pg-active{
     background:#eee;
     color:#333!important;
+}
+#blog-background{
+    background:url('../img/paper.jpg');
+}
+.wide-modal{
+    width:90%;
+}
+.hover-heart{
+    transition-duration: .4s;
+    color:#111;
+    font-size:20px;
+    cursor:pointer;
+    &:hover{
+        font-weight:700;
+        color:#900;
+    }
 }

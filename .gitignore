@@ -5,3 +5,5 @@ npm-debug.log
 remoteSeed
 sparky.json
 NOTES
+config/keys.js
+config/keys.json

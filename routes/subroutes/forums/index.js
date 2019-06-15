@@ -10,18 +10,8 @@ const express = require('express'),
     _ = require('lodash'),
     oid = mongoose.Types.ObjectId,
     cats = ['general', 'missions', 'random', 'management'],
-    authbit = (req, res, next) => {
-        if (req.session && req.session.user && req.session.user._id) {
-            if (req.session.user.isBanned) {
-                res.status(403).send('banned');
-            }
-            next();
-        } else {
-            res.status(401).send('err')
-        }
-    },
     isMod = (req, res, next) => {
-        mongoose.model('User').findOne({ user: req.session.user.user }, function(err, usr) {
+        mongoose.model('User').findOne({ _id: req.session.passport.user }, function(err, usr) {
             if (!err && usr.mod) {
                 next();
             } else {
@@ -46,14 +36,35 @@ const routeExp = function(io) {
     // router.post('/uploadFile', upload.any(), (req, res, next) => {
     //     res.send(req.files)
     // })
-    router.post('/newThread', authbit, (req, res, next) => {
+    this.authbit = (req, res, next) => {
+        if (!req.session || !req.session.passport || !req.session.passport.user) {
+            //no passport userid
+            res.status(401).send('err')
+        } else {
+            mongoose.model('User').findOne({
+                _id: req.session.passport.user
+            }, function (err, usr) {
+                if (!err && usr && !usr.isBanned && !usr.locked) {
+                    usr.lastAction = new Date().toLocaleString();
+                    usr.save((errsv,usv)=>{
+                        // truncus('after auth and LA update, usr is',usv)
+                        req.user = usv;
+                        next();
+                    })
+                } else {
+                    res.status(403).send('err');
+                }
+            })
+        }
+    };
+    router.post('/newThread', this.authbit, (req, res, next) => {
         mongoose.model('thread').find({ title: req.body.title }, function(err, thr) {
             console.log('THREAD', req.body)
             if (thr && thr.length) {
                 res.send('err');
             } else {
                 const newThr = {
-                    user: req.session.user.user,
+                    user: req.user.user,
                     grp: req.body.grp || 'general',
                     open: req.body.open,
                     stickied: req.body.stickied,
@@ -68,7 +79,7 @@ const routeExp = function(io) {
                     mongoose.model('post').create({
                         text: req.body.text,
                         md: req.body.md,
-                        user: req.session.user.user,
+                        user: req.user.user,
                         thread: thrd._id,
                         grp: theCat,
                         file: req.body.file
@@ -76,7 +87,7 @@ const routeExp = function(io) {
                         thrd.posts.push({
                             id: thpst._id,
                             order: 0,
-                            votesUp: [req.session.user.user]
+                            votesUp: [req.user.user]
                         })
                         thrd.lastUpd = Date.now();
                         thrd.save();
@@ -86,7 +97,7 @@ const routeExp = function(io) {
             }
         })
     });
-    router.get('/thread', authbit, (req, res, next) => {
+    router.get('/thread', this.authbit, (req, res, next) => {
         if (!req.query.id) {
             res.send('err');
             return false;
@@ -109,46 +120,46 @@ const routeExp = function(io) {
             }
         })
     })
-    router.post('/vote', authbit, (req, res, next) => {
+    router.post('/vote', this.authbit, (req, res, next) => {
         // const voteChange = !!req.body.voteUp?1:-1;
         mongoose.model('thread').findOne({ _id: req.body.thread }, (err, thrd) => {
             // console.log('thred',thrd)
             const thePst = thrd.posts.filter(psf => psf.id == req.body.post)[0];
             //not already voted up
-            if (!!req.body.voteUp && thePst.votesUp.indexOf(req.session.user.user) < 0) {
-                thePst.votesUp.push(req.session.user.user);
+            if (!!req.body.voteUp && thePst.votesUp.indexOf(req.user.user) < 0) {
+                thePst.votesUp.push(req.user.user);
             } else if (!!req.body.voteUp) {
-                thePst.votesUp.removeOne(req.session.user.user);
+                thePst.votesUp.removeOne(req.user.user);
             }
 
-            if (!req.body.voteUp && thePst.votesDown.indexOf(req.session.user.user) < 0) {
-                thePst.votesDown.push(req.session.user.user);
+            if (!req.body.voteUp && thePst.votesDown.indexOf(req.user.user) < 0) {
+                thePst.votesDown.push(req.user.user);
             } else if (!req.body.voteUp) {
-                thePst.votesDown.removeOne(req.session.user.user);
+                thePst.votesDown.removeOne(req.user.user);
             }
 
 
 
             //if we're 'switching' votes
-            if (!!req.body.voteUp && thePst.votesDown.indexOf(req.session.user.user) > -1) {
-                thePst.votesDown.removeOne(req.session.user.user);
+            if (!!req.body.voteUp && thePst.votesDown.indexOf(req.user.user) > -1) {
+                thePst.votesDown.removeOne(req.user.user);
             }
 
-            if (!req.body.voteUp && thePst.votesUp.indexOf(req.session.user.user) > -1) {
-                thePst.votesUp.removeOne(req.session.user.user);
+            if (!req.body.voteUp && thePst.votesUp.indexOf(req.user.user) > -1) {
+                thePst.votesUp.removeOne(req.user.user);
             }
             thrd.save((err, thrdn) => {
                 res.send(thrd);
             })
         })
     })
-    router.get('/allByUsr', authbit, (req, res, next) => {
-        mongoose.model('post').find({ user: req.session.user.name }, (err, psts) => {
+    router.get('/allByUsr', this.authbit, (req, res, next) => {
+        mongoose.model('post').find({ _id: req.session.passport.user }, (err, psts) => {
             //should also get threads? or store threads on post model
             res.send(psts);
         })
     })
-    router.post('/newPost', authbit, (req, res, next) => {
+    router.post('/newPost', this.authbit, (req, res, next) => {
         if (!req.body.thread) res.status(400).send('err');
         mongoose.model('thread').findOne({ _id: req.body.thread }, (err, thrd) => {
             const thrdLen = thrd.posts.length;
@@ -158,14 +169,14 @@ const routeExp = function(io) {
                 mongoose.model('post').create({
                     text: req.body.text, //html
                     md: req.body.md,
-                    user: req.session.user.user,
+                    user: req.user.user,
                     file: req.body.file || null,
                     thread: req.body.thread, //ID of parent thread.
                 }, (err, pst) => {
                     thrd.posts.push({
                         id: pst._id,
                         order: thrdLen,
-                        votesUp: [req.session.user.user]
+                        votesUp: [req.user.user]
                     })
                     thrd.lastUpd = Date.now();
                     thrd.save((err, resp) => {
@@ -175,8 +186,8 @@ const routeExp = function(io) {
             }
         })
     })
-    router.post('/editPost', authbit, (req, res, next) => {
-        mongoose.model('post').findOneAndUpdate({ id: req.body.id, user: req.session.user.name }, { text: req.body.text }, (err, pst) => {
+    router.post('/editPost', this.authbit, (req, res, next) => {
+        mongoose.model('post').findOneAndUpdate({ id: req.body.id, user: req.user.user }, { text: req.body.text }, (err, pst) => {
             if (err || !pst) {
                 res.status(400).send('err');
             } else {
@@ -210,7 +221,7 @@ const routeExp = function(io) {
             }
         })
     })
-    router.get('/byCat', authbit, (req, res, next) => {
+    router.get('/byCat', this.authbit, (req, res, next) => {
         if (!req.query.grp) {
             res.send('err');
         }
@@ -253,7 +264,7 @@ const routeExp = function(io) {
         })
     })
     //thread status toggles
-    router.get('/toggleLock', authbit, isMod, (req, res, next) => {
+    router.get('/toggleLock', this.authbit, isMod, (req, res, next) => {
         mongoose.model('thread').findOne({ _id: req.query.id }, (err, thr) => {
             thr.open = !thr.open;
             thr.save((err, resp) => {
@@ -261,7 +272,7 @@ const routeExp = function(io) {
             })
         })
     })
-    router.get('/toggleSticky', authbit, isMod, (req, res, next) => {
+    router.get('/toggleSticky', this.authbit, isMod, (req, res, next) => {
         mongoose.model('thread').findOne({ _id: req.query.id }, (err, thr) => {
             thr.stickied = !thr.stickied;
             thr.save((err, resp) => {
@@ -270,7 +281,7 @@ const routeExp = function(io) {
             })
         })
     })
-    router.delete('/deleteThread',authbit,isMod,(req,res,next)=>{
+    router.delete('/deleteThread',this.authbit,isMod,(req,res,next)=>{
         if(!req.query.id){
             res.send('err');
             return false;

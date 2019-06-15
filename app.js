@@ -6,10 +6,10 @@ const express = require('express'),
     path = require('path'),
     cookieParser = require('cookie-parser'),
     // cookie = require('cookie'),
+    helmet = require('helmet'),
     bodyParser = require('body-parser'),
     session = require('express-session'),
-    // passport = require('passport'),
-    // LocalStrategy = require('passport-local').Strategy,
+    passport = require('passport'),
     compression = require('compression');
 app.use(compression());
 
@@ -18,11 +18,11 @@ const sesh = session({
 });
 const usrModel = require('./models/users')
 app.use(sesh);
-// app.use(passport.initialize());
-// app.use(passport.session());
-// passport.use(new LocalStrategy(usrModel.authenticate()))
-// passport.serializeUser(usrModel.serializeUser());
-// passport.deserializeUser(usrModel.deserializeUser());
+app.use(passport.initialize());
+app.use(passport.session());
+const passportSetup = require('./config/passport-setup');
+app.use(helmet());
+
 app.use(cookieParser('spero eam beatam esse'))
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json({ limit: '50mb' }));

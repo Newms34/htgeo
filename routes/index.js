@@ -7,6 +7,7 @@ module.exports = function(io, pp) {
     router.use('/forum', require('./subroutes/forums')(io, pp));
     router.use('/tool', require('./subroutes/tools')(io, pp));
     router.use('/cal', require('./subroutes/cal')(io, pp));
+    router.use('/blog', require('./subroutes/blog')(io, pp));
     // router.get('/reset', function(req, res, next) {
     //     console.log('reset page!')
     //     res.sendFile('reset.html', { root: './views' })

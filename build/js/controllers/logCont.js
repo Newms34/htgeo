@@ -9,6 +9,9 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
     $scope.goLog = () => {
         $state.go('appSimp.login')
     };
+    $scope.googLog = () => {
+        window.location.href = './user/google';
+    }
     $scope.forgot = () => {
         if (!$scope.user) {
             bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Forgot Password', 'To recieve a password reset email, please enter your username!')
@@ -43,8 +46,13 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                 }
             })
             .catch(e => {
-                bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Error', "There's been some sort of error logging in. This is <i>probably</i> not an issue necessarily with your credentials. Blame Dave!")
-                console.log(e);
+                if(e.data=='unconfirmed'){
+                    bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Unconfirmed', "Your account is currently unconfirmed. For anti-spam purposes, we need a [GEO] person to confirm your account. Thanks!")
+                }else{
+
+                    bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Error', "There's been some sort of error logging in. This is <i>probably</i> not an issue necessarily with your credentials. Blame Dave!")
+                    // console.log(e);
+                }
             })
     }
     $scope.checkUser = () => {
@@ -83,9 +91,14 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                         .then(() => {
                             $state.go('app.dash')
                         })
+                }).catch(e=>{
+                    if(e.data=='duplicate'){
+                        bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;User Already Exists', "That account already exists. Are you sure you didn't mean to log in?")
+                    }
                 })
             })
         } else {
+            console.log('running register with user',$scope.user,'and pwd',$scope.pwd)
             $http.post('/user/new', {
                     user: $scope.user,
                     pass: $scope.pwd,
@@ -96,6 +109,10 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                         .then(() => {
                             $state.go('app.dash')
                         })
+                }).catch(e=>{
+                    if(e.data=='duplicate'){
+                        bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;User Already Exists', "That account already exists. Are you sure you didn't mean to log in?")
+                    }
                 })
         }
     }
