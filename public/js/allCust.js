@@ -1547,8 +1547,8 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
         $http.post('/user/login', { user: $scope.user, pass: $scope.pwd })
             .then((r) => {
                 console.log(r);
-                if (r.data=='authErr') {
-                    bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Incorrect Login', 'Either your username or password (or both!) are incorrect.<hr><span style="font-weight:bold;">Note to Previous Users:</span><br> Your account MAY have been reset due to an issue with the authentication software we were using. For security reasons, I had to wipe the database (including accounts). Really sorry! <br> - Dave (HealyUnit)');
+                if (r.data=='authErr' || !r.data) {
+                    bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Incorrect Login', 'Either your username or password (or both!) are incorrect.');
                 }else if(r.data=='banned'){
                     bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Banned', "You've been banned! We're a pretty laid-back guild, so you must have <i>really</i> done something to piss us off!")
                 } else {

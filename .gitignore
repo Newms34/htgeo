@@ -7,3 +7,5 @@ sparky.json
 NOTES
 config/keys.js
 config/keys.json
+build/libs/vue-router.min.js
+build/libs/vue.min.js
