@@ -12,14 +12,10 @@ if (!!fs.existsSync('./config/keys.json')) {
 } else {
     console.log('loading keys from environment vars')
     keys = {
-        SPARKPOST_API_KEY: process.env.SPARKPOST_API_KEY,
-        SPARKPOST_API_URL: process.env.SPARKPOST_API_URL,
-        SPARKPOST_SANDBOX_DOMAIN: process.env.SPARKPOST_SANDBOX_DOMAIN,
-        SPARKPOST_SMTP_HOST: process.env.SPARKPOST_SMTP_HOST,
-        SPARKPOST_SMTP_PASSWORD: process.env.SPARKPOST_SMTP_PASSWORD,
-        SPARKPOST_SMTP_PORT: process.env.SPARKPOST_SMTP_PORT,
-        SPARKPOST_SMTP_USERNAME: process.env.SPARKPOST_SMTP_USERNAME,
-        SENDGRID_API: process.env.SENDGRID_API
+        google:{
+            clientID:process.env.googleId,
+            secret:process.env.clientSecret
+        }
     }
 }
 passport.serializeUser((user, done) => {
