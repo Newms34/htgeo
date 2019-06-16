@@ -66,7 +66,7 @@ const routeExp = function(io) {
             })
         })
     })
-    router.post('/newPost',this.authbit,isMod,(req,res,next)=>{
+    router.post('/post',this.authbit,isMod,(req,res,next)=>{
         if(!req.body.title|| !req.body.contents){
             return res.status(400).send('noInfo')
         }else{
@@ -75,6 +75,27 @@ const routeExp = function(io) {
                 res.send(resp);
             })
         }
+    });
+    router.delete('/post',this.authbit,isMod,(req,res,next)=>{
+        console.log('looking for blog',req.query,'from user',req.user.user)
+        mongoose.model('blog').findOneAndRemove({
+            _id:req.query.id,
+            author:req.user.user,
+        },(err,resp)=>{
+            console.log('resp was',resp,'err was',err)
+            res.send('done');
+        })
+    })
+    router.put('/post',this.authbit,isMod,(req,res,next)=>{
+        mongoose.model('blog').findOne({
+            _id:req.body._id,
+            author:req.user.user,
+        },(err,blg)=>{
+            blg.contents = req.body.editContents;
+            blg.save((erb,svb)=>{
+                res.send('done');
+            })
+        })
     })
     return router;
 }

@@ -1,6 +1,8 @@
 <div ng-controller='forum-thr-cont'>
     <div class="panel container">
-        <div class="panel-heading has-background-grey-darker has-text-white"><a href="#" ui-sref='app.forum' class='no-blue-link'>Forums</a>:&nbsp;<a href="#" ui-sref='app.forumCat({c:currCat})' class='no-blue-link'>{{currCat}}</a>:&nbsp;{{thr.title}}</div>
+        <div class="panel-heading has-background-grey-darker has-text-white"><a href="#" ui-sref='app.forum'
+                class='no-blue-link'>Forums</a>:&nbsp;<a href="#" ui-sref='app.forumCat({c:currCat})'
+                class='no-blue-link'>{{currCat}}</a>:&nbsp;{{thr.title}}</div>
         <div class="panel-block has-text-white" style='display:block; width:100%;'>
             <div class="content forum-post is-fullwidth columns" ng-repeat='pst in thr.posts'>
                 <div class='column is-one-fifth has-background-grey-darker'>
@@ -18,12 +20,22 @@
                     </div>
                     <div class='post-image' ng-if='pst.file && pst.file.length'><img src="{{pst.file}}"></div>
                     <div class='post-buttons'>
-                        <button class="button is-light is-small" title='Reply to this post' ng-click='quoteMe(pst);'><i class='fa fa-reply'></i></button>
-                        <button class="button is-light is-small" title='Report this post'><i class='fa fa-exclamation'></i></button>
+                        <button class="button is-light is-small" title='Reply to this post' ng-click='quoteMe(pst);'><i
+                                class='fa fa-reply'></i></button>
+                        <button class="button is-light is-small" title='Report this post'><i
+                                class='fa fa-exclamation' ng-click='repPost(pst)'></i></button>
 
-                        <button class="button is-pulled-right is-light is-small" title='Vote down' ng-click='vote(pst,false);' ng-class='{"is-danger":pst.votesDown.indexOf(user.user)>-1}'><i class='fa fa-thumbs-down'></i></button>
-                        <button class="button is-pulled-right is-light is-small" title='Vote up' ng-click='vote(pst,true);' ng-class='{"is-success":pst.votesUp.indexOf(user.user)>-1}'><i class='fa fa-thumbs-up'></i></button>
-                        <div class='is-pulled-right vote-box' ng-class='{"good-vote":(pst.votesUp.length-pst.votesDown.length>=1),"bad-vote":(pst.votesUp.length-pst.votesDown.length)<1}'><span ng-if='pst.votesUp.length-pst.votesDown.length>0'>+</span>{{pst.votesUp.length-pst.votesDown.length}}</div>
+                        <button class="button is-pulled-right is-light is-small" title='Vote down'
+                            ng-click='vote(pst,false);' ng-class='{"is-danger":pst.votesDown.indexOf(user.user)>-1}'><i
+                                class='fa fa-thumbs-down'></i></button>
+                        <button class="button is-pulled-right is-light is-small" title='Vote up'
+                            ng-click='vote(pst,true);' ng-class='{"is-success":pst.votesUp.indexOf(user.user)>-1}'><i
+                                class='fa fa-thumbs-up'></i></button>
+                        <div class='is-pulled-right vote-box'
+                            ng-class='{"good-vote":(pst.votesUp.length-pst.votesDown.length>=1),"bad-vote":(pst.votesUp.length-pst.votesDown.length)<1}'>
+                            <span
+                                ng-if='pst.votesUp.length-pst.votesDown.length>0'>+</span>{{pst.votesUp.length-pst.votesDown.length}}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -31,24 +43,31 @@
         <div class="panel-footer">
             <div class='new-post-bx content' ng-if='thr.open'>
                 <h4 class='has-text-white'>Add Something</h4>
-                <textarea class='textarea is-fullwidth' id='postTxt' placeholder="Say something!"></textarea>
+                <textarea class='textarea is-fullwidth' id='postTxt' placeholder="Say something!"
+                    ng-model='newPostTxt'></textarea>
+                <hr>
+                <div class="notification has-background-grey-lighter content has-text-left has-text-black">
+                    <div ng-bind-html='newPostTxt|markdown'></div>
+                    <span ng-if='!newPostTxt'>(A preview of your post contents will go here!)</span>
+                </div>
                 <hr>
                 <div class="field">
-                        <div class="file is-centered">
-                            <label class="file-label">
-                                <!-- <input class="file-input" type="file" ng-model='newThr.file' ng-click='loadingFile=true' onchange="angular.element(this).scope().loadFile()"> -->
-                                <input class='file-input' type="file" fileread="file" onchange="angular.element(this).scope().loadFile()"/>
-                                <span class="file-cta">
-                                    <span class="file-icon">
-                                        <i class="fa fa-upload"></i>
-                                    </span>
-                                <span class="file-label">
-                                        {{fileName?fileName:'Include an image (optional)…'}}
-                                    </span>
+                    <div class="file is-centered">
+                        <label class="file-label">
+                            <!-- <input class="file-input" type="file" ng-model='newThr.file' ng-click='loadingFile=true' onchange="angular.element(this).scope().loadFile()"> -->
+                            <input class='file-input' type="file" fileread="file"
+                                onchange="angular.element(this).scope().loadFile()" />
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fa fa-upload"></i>
                                 </span>
-                            </label>
-                        </div>
+                                <span class="file-label">
+                                    {{fileName?fileName:'Include an image (optional)…'}}
+                                </span>
+                            </span>
+                        </label>
                     </div>
+                </div>
                 <button class="button is-light" ng-click='newPost()'><i class='fa fa-plus'></i>&nbsp;Post</button>
             </div>
             <div class="notification has-background-grey-darker has-text-white" ng-if='!thr.open'>

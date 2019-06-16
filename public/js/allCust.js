@@ -180,6 +180,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
                 });
             }
         }
+    }]).filter('markdown', ['$sce', function ($sce) {
+        return function (md) {
+            // const video_id = url.split('v=')[1].split('&')[0];
+            const conv = new showdown.Converter();
+            return $sce.trustAsHtml(conv.makeHtml(md));
+        };
     }]);
 
 Array.prototype.rotate = function (n) {
@@ -357,6 +363,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
             di.likeNum = di.likes.length;
             di.usrLiked = !!di.likes.includes($scope.user._id);
             di.when = new Date(di.date).toLocaleString();
+            di.editContents = di.contents;
             return di;
         })
     }
@@ -416,7 +423,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         let nb = angular.copy($scope.newBlog);
         delete nb.picCand;
         delete nb.youtubeCand;
-        $http.post('/blog/newPost', nb).then(r => {
+        $http.post('/blog/post', nb).then(r => {
             // console.log('response from posting new blog:',r)
             $scope.newBlog = {
                 title: null,
@@ -427,6 +434,28 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 youtubeCand: null
             }
             $scope.refBlogs();
+        })
+    }
+    $scope.editBlog=b=>{
+        bulmabox.confirm('Update Blog Text','Are you sure you wanna update your blog post?',c=>{
+            if(!!c){
+                $http.put('/blog/post',b).then(r=>{
+                    $scope.refBlogs();
+                })
+            }
+        })
+    }
+    $scope.deleteBlog=b=>{
+        console.log('Attempting to delete blog',b)
+        bulmabox.confirm('Delete Blog Post','Are you sure you wanna delete this blog entry?',c=>{
+            if(!!c){
+                if(!Object.keys(b)){
+                    console.log('somehow b got emptied!',b)
+                }
+                $http.delete('/blog/post?id='+b._id).then(r=>{
+                    $scope.refBlogs();
+                })
+            }
         })
     }
 }).directive('customOnChange', function () {
@@ -441,9 +470,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
 
         }
     };
-});
-
-app.filter('trusted', ['$sce', function ($sce) {
+}).filter('trusted', ['$sce', function ($sce) {
     return function (url) {
         const video_id = url.split('v=')[1].split('&')[0];
         return $sce.trustAsResourceUrl("https://www.youtube.com/embed/" + video_id);
@@ -1495,7 +1522,7 @@ app.controller('forum-cont', function($scope, $http, $state,$sce) {
         $state.go('app.forumCat', { c: n })
     }
 })
-app.controller('forum-thr-cont', function($scope, $http, $state, $location, $sce) {
+app.controller('forum-thr-cont', function ($scope, $http, $state, $location, $sce) {
     $scope.currMsg = 0;
     $scope.defaultPic = defaultPic;
     $scope.forObj = {};
@@ -1505,18 +1532,18 @@ app.controller('forum-thr-cont', function($scope, $http, $state, $location, $sce
         //since we really cannot do anything here if user is NOT logged in
     }
     $scope.loadingFile = false;
-    $scope.loadFile=()=>{
-       $scope.loadingFile= true;
-       const fr = new FileReader();
+    $scope.loadFile = () => {
+        $scope.loadingFile = true;
+        const fr = new FileReader();
     }
     $scope.currCat = $location.search().c;
     $scope.id = $location.search().t;
     // console.log($scope.currCat,)
     $scope.refThred = () => {
-        console.log('info to back:',$scope.id)
+        console.log('info to back:', $scope.id)
         $http.get('/forum/thread?id=' + $scope.id)
             .then((r) => {
-                console.log('response',r)
+                console.log('response', r)
                 $scope.thr = r.data.thrd;
                 r.data.psts.map(ps => {
                     ps.rawText = ps.text;
@@ -1531,7 +1558,7 @@ app.controller('forum-thr-cont', function($scope, $http, $state, $location, $sce
                     const thePst = r.data.psts.filter(psps => psps._id == psth.id)[0];
                     thePst.votesUp = psth.votesUp;
                     thePst.votesDown = psth.votesDown;
-                    thePst.byMod = r.data.mods.indexOf(thePst.user)>-1;
+                    thePst.byMod = r.data.mods.indexOf(thePst.user) > -1;
                     thePst.order = psth.order;
                     return r.data.psts.filter(psps => psps._id == psth.id)[0];
                 }).sort((a, b) => {
@@ -1546,37 +1573,48 @@ app.controller('forum-thr-cont', function($scope, $http, $state, $location, $sce
         console.log('user', $scope.user)
     })
     $scope.newPost = () => {
-        let theText = document.querySelector('#postTxt').value;
-        console.log('new POST',theText,$scope.fileread);
-        if(!theText && !$scope.fileread){
-            bulmabox.alert('Say Something',`You can't just post nothing!`);
+        // let theText = document.querySelector('#postTxt').value;
+        // console.log('new POST',theText,$scope.fileread);
+        if (!$scope.newPostTxt && !$scope.fileread) {
+            bulmabox.alert('Say Something!', `You can't just post nothing!`);
             return false;
         }
         // return false;
         $http.post('/forum/newPost', {
                 thread: $scope.thr._id,
-                text: new showdown.Converter().makeHtml(theText),
-                md:theText,
-                file:$scope.fileread||null
+                text: new showdown.Converter().makeHtml($scope.newPostTxt),
+                md: $scope.newPostTxt,
+                file: $scope.fileread || null
             })
             .then((r) => {
                 window.location.reload();
             })
     };
     $scope.vote = (pst, dir) => {
-        console.log('voting for', pst, 'direction', dir, 'which is', typeof dir)
-        $http.post('/forum/vote', {
-            thread:pst.thread,
-            post:pst._id,
-            voteUp:!!dir
-        })
+        // console.log('voting for', pst, 'direction', dir, 'which is', typeof dir)
+        $http.put('/forum/vote', {
+                thread: pst.thread,
+                post: pst._id,
+                voteUp: !!dir
+            })
             .then((r) => {
-                console.log('vote response is:',r)
+                console.log('vote response is:', r)
                 $scope.refThred();
             })
     }
-    $scope.quoteMe=(pst)=>{
-        document.querySelector('#postTxt').value = '>'+ pst.md;
+    $scope.repPost = p=>{
+        bulmabox.confirm('Report Post','Are you sure you wish to report this post to the mod team? <br>Please note that abuse of the report feature will result in the mod team being very angery.',e=>{
+            if(!!e){
+                $http.get('/forums/reportPost?id='+p._id).then(r=>{
+                    bulmabox.alert('Post Reported!','This post has been reported. Thanks!')
+                }).catch(e=>{
+                    bulmabox.alert(`Can't Report`,`There was some issue reporting this post. Sorry!`);
+                })
+            }
+        })
+    }
+    $scope.quoteMe = (pst) => {
+        document.querySelector('#postTxt').value = '>' + pst.md;
     }
 })
 app.controller('inbox-cont',function($scope,$http,userFact){
@@ -1712,10 +1750,20 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                     $http.post('/user/login', { user: $scope.user, pass: $scope.pwd })
                         .then(() => {
                             $state.go('app.dash')
+                        }).catch(e=>{
+                            if(e.data=='duplicate'){
+                                bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;User Already Exists', "That account already exists. Are you sure you didn't mean to log in?")
+                            }
+                            if(e.data=='unconfirmed'){
+                                $state.go('appSimp.unconfirmed')
+                            }
                         })
                 }).catch(e=>{
                     if(e.data=='duplicate'){
                         bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;User Already Exists', "That account already exists. Are you sure you didn't mean to log in?")
+                    }
+                    if(e.data=='unconfirmed'){
+                        $state.go('appSimp.unconfirmed')
                     }
                 })
             })
@@ -1758,6 +1806,63 @@ app.controller('main-cont', function($scope, $http, $state,userFact) {
     // 	$scope.online = r;
     // 	console.log('users now online are',r)
     // })
+    $scope.explMd = ()=>{
+        bulmabox.alert('Markdown',`<div class='is-size-2'>Markdown</div>
+        <hr>
+        <div class='is-size-5'>What It Is</div>
+        <p>Markdown is a specialized way of formatting text, used by sites like Reddit, Stack Overflow, and apps like Discord.</p>
+        <hr>
+        <div class='is-size-5'>What It Does</div>
+        <p>It allows you to format text with stuff like <strong>bold</strong> or <em>italics</em> without the use of fancy, complex word processors.</p>
+        <hr>
+        <div class='is-size-4'>Commands:</div>
+        <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+        <th style="text-align:left"><strong>Markdown</strong></th>
+        <th style="text-align:left"><strong>Result</strong></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td style="text-align:left">#text, ##text,…</td>
+        <td style="text-align:left">header (big text). More '#'s means smaller headers</td>
+        </tr>
+        <tr>
+        <td style="text-align:left">*text*, _text_</td>
+        <td style="text-align:left"><em>italic text</em></td>
+        </tr>
+        <tr>
+        <td style="text-align:left">**text**,__text,__</td>
+        <td style="text-align:left"><strong>bold text</strong></td>
+        </tr>
+        <tr>
+        <td style="text-align:left">~~text~~</td>
+        <td style="text-align:left"><s>strikethrough text</s> woops!</td>
+        </tr>
+        <tr>
+        <td style="text-align:left">[link text](link url)</td>
+        <td style="text-align:left"><a href="https://www.google.com">links</a></td>
+        </tr>
+        <tr>
+        <td style="text-align:left">- item</td>
+        <td style="text-align:left">- item in a bullet list</td>
+        </tr>
+        <tr>
+        <td style="text-align:left">1. item</td>
+        <td style="text-align:left">1. Item in a numbered list</td>
+        </tr>
+        <tr>
+        <td style="text-align:left">![alt text](url “hover text”)</td>
+        <td style="text-align:left"><img src="https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png" alt="alt text" title="hover text"> (The alt text is displayed if the browser can’t load the image)</td>
+        </tr>
+        <tr>
+        <td style="text-align:left">\`text\`</td>
+        <td style="text-align:left"><code>look ma, ima programmer!</code></td>
+        </tr>
+        </tbody>
+        </table>`)
+    }
 })
 
 app.controller('nav-cont',function($scope,$http,$state){

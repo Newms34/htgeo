@@ -177,6 +177,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
                 });
             }
         }
+    }]).filter('markdown', ['$sce', function ($sce) {
+        return function (md) {
+            // const video_id = url.split('v=')[1].split('&')[0];
+            const conv = new showdown.Converter();
+            return $sce.trustAsHtml(conv.makeHtml(md));
+        };
     }]);
 
 Array.prototype.rotate = function (n) {

@@ -69,6 +69,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
             di.likeNum = di.likes.length;
             di.usrLiked = !!di.likes.includes($scope.user._id);
             di.when = new Date(di.date).toLocaleString();
+            di.editContents = di.contents;
             return di;
         })
     }
@@ -128,7 +129,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         let nb = angular.copy($scope.newBlog);
         delete nb.picCand;
         delete nb.youtubeCand;
-        $http.post('/blog/newPost', nb).then(r => {
+        $http.post('/blog/post', nb).then(r => {
             // console.log('response from posting new blog:',r)
             $scope.newBlog = {
                 title: null,
@@ -139,6 +140,28 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 youtubeCand: null
             }
             $scope.refBlogs();
+        })
+    }
+    $scope.editBlog=b=>{
+        bulmabox.confirm('Update Blog Text','Are you sure you wanna update your blog post?',c=>{
+            if(!!c){
+                $http.put('/blog/post',b).then(r=>{
+                    $scope.refBlogs();
+                })
+            }
+        })
+    }
+    $scope.deleteBlog=b=>{
+        console.log('Attempting to delete blog',b)
+        bulmabox.confirm('Delete Blog Post','Are you sure you wanna delete this blog entry?',c=>{
+            if(!!c){
+                if(!Object.keys(b)){
+                    console.log('somehow b got emptied!',b)
+                }
+                $http.delete('/blog/post?id='+b._id).then(r=>{
+                    $scope.refBlogs();
+                })
+            }
         })
     }
 }).directive('customOnChange', function () {
@@ -153,9 +176,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
 
         }
     };
-});
-
-app.filter('trusted', ['$sce', function ($sce) {
+}).filter('trusted', ['$sce', function ($sce) {
     return function (url) {
         const video_id = url.split('v=')[1].split('&')[0];
         return $sce.trustAsResourceUrl("https://www.youtube.com/embed/" + video_id);

@@ -1,6 +1,5 @@
-1536969747024
-Added Repeatable events (mods only!).
-Users can now change passwords!
-Account recover now available; to this end, I STRONGLY suggest you provide a recover email!
-Fixed time display issue on forum categories
-Can now preview tomorrow's dailies!
+1560711837382
+Added blogging feature! Only mods can create blog entries
+You can now edit/delete blog entries.
+Both blogs and forum posts now incorporate Markdown
+Re-enabled report feature for forum posts (I can't remember if/why i disabled it!)

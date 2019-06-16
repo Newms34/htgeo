@@ -90,10 +90,20 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                     $http.post('/user/login', { user: $scope.user, pass: $scope.pwd })
                         .then(() => {
                             $state.go('app.dash')
+                        }).catch(e=>{
+                            if(e.data=='duplicate'){
+                                bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;User Already Exists', "That account already exists. Are you sure you didn't mean to log in?")
+                            }
+                            if(e.data=='unconfirmed'){
+                                $state.go('appSimp.unconfirmed')
+                            }
                         })
                 }).catch(e=>{
                     if(e.data=='duplicate'){
                         bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;User Already Exists', "That account already exists. Are you sure you didn't mean to log in?")
+                    }
+                    if(e.data=='unconfirmed'){
+                        $state.go('appSimp.unconfirmed')
                     }
                 })
             })

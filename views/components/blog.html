@@ -5,7 +5,7 @@
             <button class="button is-link is-large" ng-if='user.mod' ng-click='newBlog.active=true'><i
                     class="fa fa-plus"></i>Create New Post</button>
             <hr ng-if='user.mod'>
-            <div class="message is-dark" ng-repeat='be in blogEntries'>
+            <div class="message is-dark" ng-repeat='be in blogEntries| orderBy:"-date"'>
                 <div class="message-header" ng-if='be.pic' style='background:url("{{be.pic}}");height:{{be.height}}px;'>
                     &nbsp;</div>
                 <div class="message-body">
@@ -18,15 +18,25 @@
                     <hr class='has-background-grey-light'>
                     <div class="is-size-3 has-text-danger">{{be.title}}</div>
                     <div class="is-fullwidth">
-                        {{be.contents}}
-                        <br><br>
+                        <button class="button is-danger is-small is-pulled-right" ng-show='user.mod' ng-click='deleteBlog(be)' title='Delete this blog entry'><i class="fa fa-trash"></i></button>
+                        <button class="button is-info is-small is-pulled-right" ng-show='user.mod && !be.editing' ng-click='be.editing=true' title='Edit this blog entry'><i class="fa fa-pencil"></i></button>
+                        <div class='content' ng-bind-html='be.contents|markdown'></div>
+                        <br>
+                        <div class="is-fullwidth notification has-background-grey-darker" ng-show='user.mod && be.editing'>
+                            <textarea class="is-fullwidth textarea" ng-model='be.editContents'></textarea><hr>
+                            <div class="notification is-fullwidth content" ng-bind-html='be.editContents|markdown'></div>
+                            <button class="button is-success" ng-click='editBlog(be)'><i class="fa fa-plus"></i>&nbsp;Submit</button>
+                            <button class="button is-danger" ng-click='be.editContents = be.contents; be.editing=false'><i class="fa fa-plus"></i>&nbsp;Cancel</button>
+                        </div>
+                        <br>
                         <div class="is-fullwidth is-size-7">
-                            <div class="has-text-weight-bold is-pulled-left">Posted:&nbsp;</div> 
+                            <div class="has-text-weight-bold is-pulled-left">Posted:&nbsp;</div>
                             <div class="is-pulled-left">
                                 {{be.when}}
                             </div>
                             <div class="is-pulled-right">
-                                Likes:&nbsp;{{be.likeNum}} <i class="fa fa-heart{{be.usrLiked?'':'-o'}} hover-heart" ng-click='toggleLike(be._id);'></i> 
+                                Likes:&nbsp;{{be.likeNum}} <i class="fa fa-heart{{be.usrLiked?'':'-o'}} hover-heart"
+                                    ng-click='toggleLike(be._id);'></i>
                             </div>
                         </div>
                         <hr class='has-background-grey-light'>
@@ -71,16 +81,24 @@
                         <div
                             class="column is-one-fifth notification has-text-centered has-text-white has-background-grey-darker">
                             Contents
+                            <br><br><br>
+                            <button class="button is-small is-light" title='Markdown cheatsheet' ng-click='$parent.explMd();'>Markdown Explanation</button>
                         </div>
                         <div class="column is-four-fifths">
                             <div class="field">
                                 <p class="control has-icons-right">
-                                    <textarea class="textarea" placeholder="Enter text contents of your post"
+                                    <textarea class="textarea" placeholder="Enter text contents of your post. We support Markdown!"
                                         ng-model='newBlog.contents'></textarea>
                                     <span class="icon is-small is-right">
                                         <i class="fa fa-align-left"></i>
                                     </span>
                                 </p>
+                            </div>
+                            <hr>
+                            <div class="notification has-background-grey-lighter content">
+                                <div ng-bind-html='newBlog.contents|markdown'></div>
+                                <span
+                                    ng-if='!newBlog.contents'>(A preview of your post contents will go here!)</span>
                             </div>
                         </div>
                         <hr>
@@ -89,11 +107,12 @@
                             Picture
                         </div>
                         <div class="column is-four-fifths">
-                                    <input type="file" id='file-inp' custom-on-change='doPic' class='button is-info'>
-                                    <!-- <input class="input" type="text"
+                            <input type="file" id='file-inp' custom-on-change='doPic' class='button is-info'>
+                            <!-- <input class="input" type="text"
                                         placeholder="Enter the URL of a picture to include (optional)"
                                         ng-model='newBlog.picCand' ng-keyup='picTimer();'> -->
-                                    <button class="button is-danger is-pulled-right" ng-if='newBlog.pic' ng-click='newBlog.pic=null'>x</button>
+                            <button class="button is-danger is-pulled-right" ng-if='newBlog.pic'
+                                ng-click='newBlog.pic=null'>x</button>
                             <br>
                             <canvas id='upl-canv'></canvas>
                             <!-- <img style='max-height:200px;' ng-if='newBlog.pic' src="{{newBlog.pic}}" alt=""> -->

@@ -57,6 +57,34 @@ const routeExp = function(io) {
             })
         }
     };
+    router.get('/reportPost',this.authbit,(req,res,next)=>{
+        //reporting threads
+        mongoose.model('post').findOne({_id:req.query.id},function(errp,postd){
+            if(err||!postd){
+                return res.status(400).send('err');
+            }
+            mongoose.model('User').find({
+                mod:true,
+                user:{$ne:req.user.user}
+            },function(errm,mods){
+                //find all mods that are not this user (in case this mod did something bad!)
+                mods.forEach(mod=>{
+                    const msgId = Math.floor(Math.random() * 9999999999999999).toString(32);
+                    mod.msgs.push({
+                        from: 'System',
+                        msg: `<div class='is-size-4'>Reported Post</div>
+                    <br>Date:${new Date(req.body.date).toLocaleString()}
+                    <br>Author:${post.author}
+                    <br>Post:${post.text}`,
+                        date: Date.now(),
+                        msgId:msgId
+                    });
+                    mod.save();
+                });
+                res.send('done!')
+            })
+        })
+    })
     router.post('/newThread', this.authbit, (req, res, next) => {
         mongoose.model('thread').find({ title: req.body.title }, function(err, thr) {
             console.log('THREAD', req.body)
@@ -120,7 +148,7 @@ const routeExp = function(io) {
             }
         })
     })
-    router.post('/vote', this.authbit, (req, res, next) => {
+    router.put('/vote', this.authbit, (req, res, next) => {
         // const voteChange = !!req.body.voteUp?1:-1;
         mongoose.model('thread').findOne({ _id: req.body.thread }, (err, thrd) => {
             // console.log('thred',thrd)
@@ -196,6 +224,7 @@ const routeExp = function(io) {
         })
     })
     router.get('/cats', (req, res, next) => {
+        //route does not return pictures of cats. 0/10 would not call
         mongoose.model('thread').find({}, function(err, grps) {
             const cats = {
                 'general': { n: 0, t: -1 },
