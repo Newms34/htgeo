@@ -1,4 +1,5 @@
 app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
+    
     $http.get('/user/getUsr')
         .then(r => {
             $scope.doUser(r.data);
@@ -32,11 +33,28 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
             console.log('all users is', au)
             $scope.allUsers = au.data;
         });
-    socket.on('msgOut', function(msg) {
-        console.log('before dealing with commands, full message object is',msg)
-    	console.log($scope.parseMsg(msg.msg),'IS THE MESSAGE')
+    socket.on('chatMsgOut', msg=> {
+        //recieved a message from backend
+        console.log('before dealing with commands, full message object is',msg);
+        // var cache = [];
+        // let Record = JSON.stringify($scope,function(key, value) {
+        //     if (typeof value === 'object' && value !== null) {
+        //         if (cache.indexOf(value) !== -1) {
+        //             // Duplicate reference found, discard key
+        //             return;
+        //         }
+        //         // Store value in our collection
+        //         cache.push(value);
+        //     }
+        //     return value;
+        // });
+        // console.log(Record)
+        // console.log($scope.parseMsg(msg.msg),'IS THE MESSAGE')
+        if(typeof msg.msg !=='string'){
+            return false;
+        }
     	msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
-        $scope.msgs.push(msg);
+        $scope.msgs.push(msg);//put this in our list of messages;
         if ($scope.msgs.length > 100) {
             $scope.msgs.shift();
         }
@@ -62,7 +80,10 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         if (!$scope.newMsg) {
             return false;
         }
+        console.log('Sending chat message',{ user: $scope.user.user, msg: $scope.newMsg })
         socket.emit('chatMsg', { user: $scope.user.user, msg: $scope.newMsg })
         $scope.newMsg = '';
     }
+    console.log('CHAT SCOPE',$scope);
+    // $scope.$onDestroy()
 })

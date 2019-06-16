@@ -79,7 +79,8 @@ io.on('connection', function(socket) {
     socket.on('chatMsg', function(msgObj) {
         console.log('chat message sent! Obj was', msgObj)
         msgObj.time = Date.now();
-        io.emit('msgOut', msgObj)
+        msgObj.randVal = Math.floor(Math.random()*999999).toString(32);
+        io.emit('chatMsgOut', msgObj)
     })
 });
 server.listen(process.env.PORT || 8080);

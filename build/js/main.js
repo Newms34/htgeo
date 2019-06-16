@@ -62,6 +62,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
             })
             .state('app.chat', {
                 url: '/chat', //default route, if not 404
+                cache:false,
                 templateUrl: 'components/chat.html'
             })
             .state('app.calendar', {

@@ -77,8 +77,14 @@ const routeExp = function (io, pp) {
     // })
     router.get('/allUsrs', this.authbit, (req, res, next) => {
         mongoose.model('User').find({}, function (err, usrs) {
-            res.send(usrs.map(u => {
-                delete u.msgs;
+            const badStuff = ['msgs','salt','googleId','pass']
+            res.send(_.cloneDeep(usrs).map(u => {
+                //we wanna remove all the sensitive info
+                badStuff.forEach(d=>{
+                    if (!!u[d]){
+                        delete u[d];
+                    }
+                })
                 return u;
             }));
         })
@@ -259,8 +265,14 @@ const routeExp = function (io, pp) {
             }
         }, function (err, nm) {
             mongoose.model('User').find({}, function (err, usrs) {
-                res.send(usrs.map(u => {
-                    delete u.msgs;
+                const badStuff = ['msgs','salt','googleId','pass']
+                res.send(_.cloneDeep(usrs).map(u => {
+                    //we wanna remove all the sensitive info
+                    badStuff.forEach(d=>{
+                        if (!!u[d]){
+                            delete u[d];
+                        }
+                    })
                     return u;
                 }));
             })
@@ -274,8 +286,14 @@ const routeExp = function (io, pp) {
             usr.isBanned = !usr.isBanned;
             usr.save(function (err, resp) {
                 mongoose.model('User').find({}, function (err, usrs) {
-                    res.send(usrs.map(u => {
-                        delete u.msgs;
+                    const badStuff = ['msgs','salt','googleId','pass']
+                    res.send(_.cloneDeep(usrs).map(u => {
+                        //we wanna remove all the sensitive info
+                        badStuff.forEach(d=>{
+                            if (!!u[d]){
+                                delete u[d];
+                            }
+                        })
                         return u;
                     }));
                 })
@@ -455,8 +473,17 @@ const routeExp = function (io, pp) {
             }
             usr.save((cerr, cusr) => {
                 console.log('err saving conf usr', cerr, 'User', cusr)
-                mongoose.model('User').find({}, (erra, usra) => {
-                    res.send(usra);
+                mongoose.model('User').find({}, function (err, usrs) {
+                    const badStuff = ['msgs','salt','googleId','pass']
+                    res.send(_.cloneDeep(usrs).map(u => {
+                        //we wanna remove all the sensitive info
+                        badStuff.forEach(d=>{
+                            if (!!u[d]){
+                                delete u[d];
+                            }
+                        })
+                        return u;
+                    }));
                 })
             })
         })

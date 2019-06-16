@@ -65,6 +65,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
             })
             .state('app.chat', {
                 url: '/chat', //default route, if not 404
+                cache:false,
                 templateUrl: 'components/chat.html'
             })
             .state('app.calendar', {
@@ -227,6 +228,64 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     // We put the Data URI in the image's src attribute
     img.src = datas;
 }
+app.factory('socketFac', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () { 
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
+    $transitions.onBefore({ to: 'app.**' }, function(trans) {
+        let def = $q.defer();
+        console.log('TRANS',trans)
+        const usrCheck = trans.injector().get('userFact')
+        usrCheck.getUser().then(function(r) {
+            console.log('response from login chck',r)
+            if (r.data && r.data.confirmed) {
+                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
+                def.resolve(true)
+            } else if(r.data){
+                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
+            }else{
+                // User isn't authenticated. Redirect to a new Target State
+                def.resolve($state.target('appSimp.login', undefined, { location: true }))
+            }
+        }).catch(e=>{
+            def.resolve($state.target('appSimp.login', undefined, { location: true }))
+        });
+        return def.promise;
+    });
+    // $transitions.onFinish({ to: '*' }, function() {
+    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+    // });
+}]);
+app.factory('userFact', function($http) {
+    return {
+        getUser: function() {
+            return $http.get('/user/getUsr').then(function(s) {
+                console.log('getUser in fac says:', s)
+                return s;
+            })
+        }
+    };
+});
 app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
     $http.get('/user/getUsr')
         .then(r => {
@@ -251,7 +310,6 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         contents: null,
         youtube: null,
         pic: null,
-        picCand: null,
         youtubeCand: null
     };
     $scope.blogEntries = [{
@@ -265,12 +323,12 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         // views: 0,
         youtube: `https://www.youtube.com/watch?v=cGZ4X7cER8k`,
         likeNum: 0,
-        usrLiked:false,
-        when:'A long time ago',
+        usrLiked: false,
+        when: 'A long time ago',
         id: null
     }]
-    
-    $scope.refBlogs = ()=>{
+
+    $scope.refBlogs = () => {
         $http.get('/blog/allEntries').then(b => {
             if (!b.data) {
                 throw new Error('no blogs')
@@ -286,16 +344,16 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 // views: 0,
                 youtube: null,
                 likeNum: 0,
-                usrLiked:false,
-                when:'A long time ago',
+                usrLiked: false,
+                when: 'A long time ago',
                 _id: null
             }]
         });
     }
     $scope.refBlogs();
-    $scope.parseBlogs=d=>{
-        return d.map(di=>{
-            di.height = di.height||400;
+    $scope.parseBlogs = d => {
+        return d.map(di => {
+            di.height = di.height || 400;
             di.likeNum = di.likes.length;
             di.usrLiked = !!di.likes.includes($scope.user._id);
             di.when = new Date(di.date).toLocaleString();
@@ -314,17 +372,24 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         pic: null,
         vid: null
     };
-    $scope.picTimer = () => {
-        if ($scope.timers.pic) {
-            clearTimeout($scope.timers.pic);
-        }
-        $scope.timers.pic = setTimeout(function () {
-            if ($scope.newBlog.picCand && $scope.newBlog.picCand.length) {
-                $scope.newBlog.pic = $scope.newBlog.picCand;
-            } else {
-                $scope.newBlog.pic=null;
+    // document.querySelector('#file-inp').addEventListener('change', $scope.doPic,false)
+    $scope.doPic = e => {
+        console.log('EVENT INTO CHANGE', e);
+        const reader = new FileReader(),
+            canv = document.querySelector('#upl-canv'),
+            ctx = canv.getContext("2d");
+        reader.onload = function (event) {
+            const img = new Image();
+            img.onload = function () {
+                console.log(img, img.width)
+                canv.width = img.width;
+                canv.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                $scope.pic = canv.toDataURL();
             }
-        }, 500)
+            img.src = event.target.result;
+        }
+        reader.readAsDataURL(e.target.files[0]);
     }
     $scope.vidTimer = () => {
         if ($scope.timers.vid) {
@@ -334,18 +399,18 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
             if ($scope.newBlog.youtubeCand && $scope.newBlog.youtubeCand.length) {
                 $scope.newBlog.youtube = $scope.newBlog.youtubeCand;
             } else {
-                $scope.newBlog.youtube=null;
+                $scope.newBlog.youtube = null;
             }
         }, 500)
     }
-    $scope.newPost = s=>{
-        if(!$scope.newBlog.title||!$scope.newBlog.contents){
+    $scope.newPost = s => {
+        if (!$scope.newBlog.title || !$scope.newBlog.contents) {
             return bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Missing Information', 'Your blog post needs a title and at least some text content!');
         }
         let nb = angular.copy($scope.newBlog);
         delete nb.picCand;
         delete nb.youtubeCand;
-        $http.post('/blog/newPost',nb).then(r=>{
+        $http.post('/blog/newPost', nb).then(r => {
             // console.log('response from posting new blog:',r)
             $scope.newBlog = {
                 title: null,
@@ -353,13 +418,24 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 youtube: null,
                 pic: null,
                 picCand: null,
-                youtubeCand: null,
-                active:false
-            };
+                youtubeCand: null
+            }
             $scope.refBlogs();
         })
     }
-})
+}).directive('customOnChange', function () {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var onChangeHandler = scope.$eval(attrs.customOnChange);
+            element.on('change', onChangeHandler);
+            element.on('$destroy', function () {
+                element.off();
+            });
+
+        }
+    };
+});
 
 app.filter('trusted', ['$sce', function ($sce) {
     return function (url) {
@@ -663,6 +739,7 @@ app.controller('cal-cont', function($scope, $http, $state) {
     }
 })
 app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
+    
     $http.get('/user/getUsr')
         .then(r => {
             $scope.doUser(r.data);
@@ -696,11 +773,28 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
             console.log('all users is', au)
             $scope.allUsers = au.data;
         });
-    socket.on('msgOut', function(msg) {
-        console.log('before dealing with commands, full message object is',msg)
-    	console.log($scope.parseMsg(msg.msg),'IS THE MESSAGE')
+    socket.on('chatMsgOut', msg=> {
+        //recieved a message from backend
+        console.log('before dealing with commands, full message object is',msg);
+        // var cache = [];
+        // let Record = JSON.stringify($scope,function(key, value) {
+        //     if (typeof value === 'object' && value !== null) {
+        //         if (cache.indexOf(value) !== -1) {
+        //             // Duplicate reference found, discard key
+        //             return;
+        //         }
+        //         // Store value in our collection
+        //         cache.push(value);
+        //     }
+        //     return value;
+        // });
+        // console.log(Record)
+        // console.log($scope.parseMsg(msg.msg),'IS THE MESSAGE')
+        if(typeof msg.msg !=='string'){
+            return false;
+        }
     	msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
-        $scope.msgs.push(msg);
+        $scope.msgs.push(msg);//put this in our list of messages;
         if ($scope.msgs.length > 100) {
             $scope.msgs.shift();
         }
@@ -726,9 +820,12 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         if (!$scope.newMsg) {
             return false;
         }
+        console.log('Sending chat message',{ user: $scope.user.user, msg: $scope.newMsg })
         socket.emit('chatMsg', { user: $scope.user.user, msg: $scope.newMsg })
         $scope.newMsg = '';
     }
+    console.log('CHAT SCOPE',$scope);
+    // $scope.$onDestroy()
 })
 app.controller('dash-cont', function($scope, $http, $state, $filter) {
         $scope.showDups = localStorage.brethDups; //show this user in 'members' list (for testing)
@@ -2455,62 +2552,4 @@ app.controller('unconf-cont', function($scope, $http, $state) {
         })
     }
 })
-app.factory('socketFac', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () { 
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
-app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
-    $transitions.onBefore({ to: 'app.**' }, function(trans) {
-        let def = $q.defer();
-        console.log('TRANS',trans)
-        const usrCheck = trans.injector().get('userFact')
-        usrCheck.getUser().then(function(r) {
-            console.log('response from login chck',r)
-            if (r.data && r.data.confirmed) {
-                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
-                def.resolve(true)
-            } else if(r.data){
-                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
-            }else{
-                // User isn't authenticated. Redirect to a new Target State
-                def.resolve($state.target('appSimp.login', undefined, { location: true }))
-            }
-        }).catch(e=>{
-            def.resolve($state.target('appSimp.login', undefined, { location: true }))
-        });
-        return def.promise;
-    });
-    // $transitions.onFinish({ to: '*' }, function() {
-    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    // });
-}]);
-app.factory('userFact', function($http) {
-    return {
-        getUser: function() {
-            return $http.get('/user/getUsr').then(function(s) {
-                console.log('getUser in fac says:', s)
-                return s;
-            })
-        }
-    };
-});
 }());

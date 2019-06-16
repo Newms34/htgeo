@@ -89,20 +89,14 @@
                             Picture
                         </div>
                         <div class="column is-four-fifths">
-                            <i class='is-size-7'>Yes, I'm aware uploading pictures would be nice. Workin on that! -
-                                Love, Healy</i>
-                            <div class="field">
-                                <p class="control has-icons-right">
-                                    <input class="input" type="text"
+                                    <input type="file" id='file-inp' custom-on-change='doPic' class='button is-info'>
+                                    <!-- <input class="input" type="text"
                                         placeholder="Enter the URL of a picture to include (optional)"
-                                        ng-model='newBlog.picCand' ng-keyup='picTimer();'>
-                                    <span class="icon is-small is-right">
-                                        <i class="fa fa-file-image-o"></i>
-                                    </span>
-                                </p>
-                            </div>
+                                        ng-model='newBlog.picCand' ng-keyup='picTimer();'> -->
+                                    <button class="button is-danger is-pulled-right" ng-if='newBlog.pic' ng-click='newBlog.pic=null'>x</button>
                             <br>
-                            <img style='max-height:200px;' ng-if='newBlog.pic' src="{{newBlog.pic}}" alt="">
+                            <canvas id='upl-canv'></canvas>
+                            <!-- <img style='max-height:200px;' ng-if='newBlog.pic' src="{{newBlog.pic}}" alt=""> -->
                         </div>
                         <hr>
                         <div

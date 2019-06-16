@@ -6,6 +6,7 @@ const usrSchema = new mongoose.Schema({
     user: String, //(user)name of the user,
     pass: String,
     email: String,
+    googleId:String,
     salt: String,
     otherInfo: String,
     reset: String,
