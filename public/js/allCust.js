@@ -397,7 +397,13 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         }
         $scope.timers.vid = setTimeout(function () {
             if ($scope.newBlog.youtubeCand && $scope.newBlog.youtubeCand.length) {
-                $scope.newBlog.youtube = $scope.newBlog.youtubeCand;
+                if($scope.newBlog.youtubeCand.includes('youtu.be')){
+                    //shortUrl: replace with long. Example:
+                    //https://youtu.be/hdylEJKNgcs goes to youtube.com/watch?v=hdylEJKNgcs;
+                    $scope.newBlog.youtube = $scope.newBlog.youtubeCand.replace('https://youtu.be/','https://www.youtube.com/watch?v=').replace('youtu.be/','https://www.youtube.com/watch?v=')
+                }else{
+                    $scope.newBlog.youtube = $scope.newBlog.youtubeCand;
+                }
             } else {
                 $scope.newBlog.youtube = null;
             }
