@@ -270,7 +270,7 @@
         <div class="panel-block has-text-white">
             <div class='is-fullwidth thrd-inst pokey' ng-repeat='ev in latestEvents' ng-click='viewEvent(ev)'>
                 <span>{{ev.title}}</span>
-                <span>{{ev.createDate|numToDate}}</span>
+                <span>{{ev.eventDate|numToDate}}</span>
             </div>
             <div class="is-fullwidth" ng-if='!latestEvents.length'>No current events!</div>
         </div>

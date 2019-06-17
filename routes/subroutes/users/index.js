@@ -76,15 +76,16 @@ const routeExp = function (io, pp) {
     //     })
     // })
     router.get('/allUsrs', this.authbit, (req, res, next) => {
-        mongoose.model('User').find({}, function (err, usrs) {
+        mongoose.model('User').find({}).exec(function (err, usrs) {
             const badStuff = ['msgs','salt','googleId','pass']
             res.send(_.cloneDeep(usrs).map(u => {
                 //we wanna remove all the sensitive info
                 badStuff.forEach(d=>{
                     if (!!u[d]){
-                        delete u[d];
+                        u[d]=null;
                     }
                 })
+                console.log('user after removal',u,typeof u,u['pass'])
                 return u;
             }));
         })
