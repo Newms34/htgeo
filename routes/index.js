@@ -13,7 +13,7 @@ module.exports = function(io, pp) {
     //     res.sendFile('reset.html', { root: './views' })
     // });
     router.get('*', function(req, res, next) {
-        console.log('trying to get main page!')
+        // console.log('trying to get main page!')
         res.sendFile('index.html', { root: './views' })
     });
     router.use(function(req, res) {

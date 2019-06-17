@@ -234,64 +234,6 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     // We put the Data URI in the image's src attribute
     img.src = datas;
 }
-app.factory('socketFac', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () { 
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
-app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
-    $transitions.onBefore({ to: 'app.**' }, function(trans) {
-        let def = $q.defer();
-        console.log('TRANS',trans)
-        const usrCheck = trans.injector().get('userFact')
-        usrCheck.getUser().then(function(r) {
-            console.log('response from login chck',r)
-            if (r.data && r.data.confirmed) {
-                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
-                def.resolve(true)
-            } else if(r.data){
-                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
-            }else{
-                // User isn't authenticated. Redirect to a new Target State
-                def.resolve($state.target('appSimp.login', undefined, { location: true }))
-            }
-        }).catch(e=>{
-            def.resolve($state.target('appSimp.login', undefined, { location: true }))
-        });
-        return def.promise;
-    });
-    // $transitions.onFinish({ to: '*' }, function() {
-    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    // });
-}]);
-app.factory('userFact', function($http) {
-    return {
-        getUser: function() {
-            return $http.get('/user/getUsr').then(function(s) {
-                console.log('getUser in fac says:', s)
-                return s;
-            })
-        }
-    };
-});
 app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
     $http.get('/user/getUsr')
         .then(r => {
@@ -1025,7 +967,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         socket.on('allNames', function(r) {
             // console.log('ALL NAMES SOCKET SAYS', r)
             r = r.map(nm => nm.name);
-            if ($scope.allUser) {
+            if ($scope.allUsers) {
                 $scope.allUsers.forEach(usr => {
                     usr.online = r.indexOf(usr.user) > -1 || usr.user == $scope.user.user;
                 })
@@ -1264,14 +1206,15 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                         bulmabox.alert('Huh?', 'Sorry, but we don\'t support uncomfortable silences currently.');
                         return false;
                     }
-                    $http.post('/user/sendMsg', { msg: theMsg, to: usr.user })
+                    $http.post('/user/sendMsg', { msg: theMsg, to: usr._id })
                         .then((r) => {
                             //done
                         })
                 }, `<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Send</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`)
         }
         $scope.viewMsg = (m, t) => {
-            bulmabox.alert(`Message from ${m.from}`, m.msg || '(No message)')
+            console.log('msg object', m)
+            bulmabox.alert(`Message ${t?'to':'from'} ${t?m.to:m.from}`, m.msg || '(No message)')
             if (t) {
                 return false;
             }
@@ -1280,6 +1223,13 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                     $scope.doUser(r.data);
                 })
         }
+        socket.on('reqHeartBeat',sr=>{
+            $scope.alsoOnline = sr.filter(q=>!$scope.user||!$scope.user.user||$scope.user.user!=q.name).map(m=>m.name);
+            if($scope.allUsers)
+            $scope.allUsers.forEach(u=>{
+                u.online  = $scope.alsoOnline.includes(u.user)
+            })
+        })
         $scope.delMsg = (m) => {
             bulmabox.confirm('Delete Message', 'Are you sure you wish to delete this message?', (resp) => {
                 console.log('resp', resp);
@@ -1794,13 +1744,20 @@ app.controller('main-cont', function($scope, $http, $state,userFact) {
     console.log('main controller registered!')
     $scope.user=null;
     userFact.getUser().then(r=>{
-    	$scope.user=r.data;
+        $scope.user=r.data;
+        $scope.user.someRandVal = 'potato';
     	//user sends their name to back
     	socket.emit('hiIm',{name:$scope.user.user})
     })
-    //used to see if this user is still online after a disconnect
+    //used to see if this user is still online after a disconnect.
+    //also used to see who ELSE is online
     socket.on('reqHeartBeat',function(sr){
-    	socket.emit('hbResp',{name:$scope.user.user})
+        $scope.alsoOnline = sr.filter(q=>!$scope.user||!$scope.user.user||$scope.user.user!=q.name).map(m=>m.name);
+        // console.log('Users that are not this user online',$scope.alsoOnline)
+        // console.log('$state is',$state)
+        if($scope.user && $scope.user.user && $state.current.name.includes('app.')){
+            socket.emit('hbResp',{name:$scope.user.user})
+        }
     })
     // socket.on('allNames',function(r){
     // 	$scope.online = r;
@@ -1872,6 +1829,9 @@ app.controller('nav-cont',function($scope,$http,$state){
                 return true;
             } else {
                 $http.get('/user/logout').then(function(r) {
+                    console.log('b4 logout usr removl, parent scope is',$scope.$parent.user)
+                    $scope.$parent.user=null;
+                    console.log('and now its',$scope.$parent.user)
                     $state.go('appSimp.login');
                 })
             }
@@ -2663,4 +2623,62 @@ app.controller('unconf-cont', function($scope, $http, $state) {
         })
     }
 })
+app.factory('socketFac', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () { 
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
+    $transitions.onBefore({ to: 'app.**' }, function(trans) {
+        let def = $q.defer();
+        console.log('TRANS',trans)
+        const usrCheck = trans.injector().get('userFact')
+        usrCheck.getUser().then(function(r) {
+            console.log('response from login chck',r)
+            if (r.data && r.data.confirmed) {
+                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
+                def.resolve(true)
+            } else if(r.data){
+                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
+            }else{
+                // User isn't authenticated. Redirect to a new Target State
+                def.resolve($state.target('appSimp.login', undefined, { location: true }))
+            }
+        }).catch(e=>{
+            def.resolve($state.target('appSimp.login', undefined, { location: true }))
+        });
+        return def.promise;
+    });
+    // $transitions.onFinish({ to: '*' }, function() {
+    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+    // });
+}]);
+app.factory('userFact', function($http) {
+    return {
+        getUser: function() {
+            return $http.get('/user/getUsr').then(function(s) {
+                console.log('getUser in fac says:', s)
+                return s;
+            })
+        }
+    };
+});
 }());

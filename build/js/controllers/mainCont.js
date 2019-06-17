@@ -5,13 +5,20 @@ app.controller('main-cont', function($scope, $http, $state,userFact) {
     console.log('main controller registered!')
     $scope.user=null;
     userFact.getUser().then(r=>{
-    	$scope.user=r.data;
+        $scope.user=r.data;
+        $scope.user.someRandVal = 'potato';
     	//user sends their name to back
     	socket.emit('hiIm',{name:$scope.user.user})
     })
-    //used to see if this user is still online after a disconnect
+    //used to see if this user is still online after a disconnect.
+    //also used to see who ELSE is online
     socket.on('reqHeartBeat',function(sr){
-    	socket.emit('hbResp',{name:$scope.user.user})
+        $scope.alsoOnline = sr.filter(q=>!$scope.user||!$scope.user.user||$scope.user.user!=q.name).map(m=>m.name);
+        // console.log('Users that are not this user online',$scope.alsoOnline)
+        // console.log('$state is',$state)
+        if($scope.user && $scope.user.user && $state.current.name.includes('app.')){
+            socket.emit('hbResp',{name:$scope.user.user})
+        }
     })
     // socket.on('allNames',function(r){
     // 	$scope.online = r;

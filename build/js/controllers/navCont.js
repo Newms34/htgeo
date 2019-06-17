@@ -5,6 +5,9 @@ app.controller('nav-cont',function($scope,$http,$state){
                 return true;
             } else {
                 $http.get('/user/logout').then(function(r) {
+                    console.log('b4 logout usr removl, parent scope is',$scope.$parent.user)
+                    $scope.$parent.user=null;
+                    console.log('and now its',$scope.$parent.user)
                     $state.go('appSimp.login');
                 })
             }

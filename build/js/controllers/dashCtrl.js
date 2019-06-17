@@ -163,7 +163,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         socket.on('allNames', function(r) {
             // console.log('ALL NAMES SOCKET SAYS', r)
             r = r.map(nm => nm.name);
-            if ($scope.allUser) {
+            if ($scope.allUsers) {
                 $scope.allUsers.forEach(usr => {
                     usr.online = r.indexOf(usr.user) > -1 || usr.user == $scope.user.user;
                 })
@@ -402,14 +402,15 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                         bulmabox.alert('Huh?', 'Sorry, but we don\'t support uncomfortable silences currently.');
                         return false;
                     }
-                    $http.post('/user/sendMsg', { msg: theMsg, to: usr.user })
+                    $http.post('/user/sendMsg', { msg: theMsg, to: usr._id })
                         .then((r) => {
                             //done
                         })
                 }, `<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Send</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`)
         }
         $scope.viewMsg = (m, t) => {
-            bulmabox.alert(`Message from ${m.from}`, m.msg || '(No message)')
+            console.log('msg object', m)
+            bulmabox.alert(`Message ${t?'to':'from'} ${t?m.to:m.from}`, m.msg || '(No message)')
             if (t) {
                 return false;
             }
@@ -418,6 +419,13 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                     $scope.doUser(r.data);
                 })
         }
+        socket.on('reqHeartBeat',sr=>{
+            $scope.alsoOnline = sr.filter(q=>!$scope.user||!$scope.user.user||$scope.user.user!=q.name).map(m=>m.name);
+            if($scope.allUsers)
+            $scope.allUsers.forEach(u=>{
+                u.online  = $scope.alsoOnline.includes(u.user)
+            })
+        })
         $scope.delMsg = (m) => {
             bulmabox.confirm('Delete Message', 'Are you sure you wish to delete this message?', (resp) => {
                 console.log('resp', resp);

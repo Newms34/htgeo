@@ -55,8 +55,7 @@ io.on('connection', function(socket) {
                 names[i].t=Date.now();
             }
         }
-        let now=Date.now();
-        names=names.filter(nm=>now-nm.t<1000)
+        
     })
 
     // //new login stuff
@@ -71,13 +70,17 @@ io.on('connection', function(socket) {
         socket.emit('allNames',names);
     })
     setInterval(function() {
-        socket.emit('reqHeartBeat', {});
+        let now=Date.now();
+        names=names.filter(nm=>now-nm.t<1000);
+        //remove any user that has not pinged us in more than 1 second
+        // console.log('names is now',names)
+        socket.emit('reqHeartBeat', names);
         socket.emit('allNames',names)
     }, 500);
 
     //messaging (for chat!)
     socket.on('chatMsg', function(msgObj) {
-        console.log('chat message sent! Obj was', msgObj)
+        // console.log('chat message sent! Obj was', msgObj)
         msgObj.time = Date.now();
         msgObj.randVal = Math.floor(Math.random()*999999).toString(32);
         io.emit('chatMsgOut', msgObj)

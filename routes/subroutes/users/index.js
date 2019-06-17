@@ -49,10 +49,10 @@ const routeExp = function (io, pp) {
             mongoose.model('User').findOne({
                 _id: req.session.passport.user
             }, function (err, usr) {
-                console.log(err,usr)
+                console.log(err, usr)
                 if (!err && usr && !usr.isBanned && !usr.locked) {
                     usr.lastAction = new Date().toLocaleString();
-                    usr.save((errsv,usv)=>{
+                    usr.save((errsv, usv) => {
                         // truncus('after auth and LA update, usr is',usv)
                         req.user = usv;
                         next();
@@ -77,15 +77,15 @@ const routeExp = function (io, pp) {
     // })
     router.get('/allUsrs', this.authbit, (req, res, next) => {
         mongoose.model('User').find({}).exec(function (err, usrs) {
-            const badStuff = ['msgs','salt','googleId','pass']
+            const badStuff = ['msgs', 'salt', 'googleId', 'pass']
             res.send(_.cloneDeep(usrs).map(u => {
                 //we wanna remove all the sensitive info
-                badStuff.forEach(d=>{
-                    if (!!u[d]){
-                        u[d]=null;
+                badStuff.forEach(d => {
+                    if (!!u[d]) {
+                        u[d] = null;
                     }
                 })
-                console.log('user after removal',u,typeof u,u['pass'])
+                console.log('user after removal', u, typeof u, u['pass'])
                 return u;
             }));
         })
@@ -266,11 +266,11 @@ const routeExp = function (io, pp) {
             }
         }, function (err, nm) {
             mongoose.model('User').find({}, function (err, usrs) {
-                const badStuff = ['msgs','salt','googleId','pass']
+                const badStuff = ['msgs', 'salt', 'googleId', 'pass']
                 res.send(_.cloneDeep(usrs).map(u => {
                     //we wanna remove all the sensitive info
-                    badStuff.forEach(d=>{
-                        if (!!u[d]){
+                    badStuff.forEach(d => {
+                        if (!!u[d]) {
                             delete u[d];
                         }
                     })
@@ -287,11 +287,11 @@ const routeExp = function (io, pp) {
             usr.isBanned = !usr.isBanned;
             usr.save(function (err, resp) {
                 mongoose.model('User').find({}, function (err, usrs) {
-                    const badStuff = ['msgs','salt','googleId','pass']
+                    const badStuff = ['msgs', 'salt', 'googleId', 'pass']
                     res.send(_.cloneDeep(usrs).map(u => {
                         //we wanna remove all the sensitive info
-                        badStuff.forEach(d=>{
-                            if (!!u[d]){
+                        badStuff.forEach(d => {
+                            if (!!u[d]) {
                                 delete u[d];
                             }
                         })
@@ -305,40 +305,47 @@ const routeExp = function (io, pp) {
     router.post('/sendMsg', this.authbit, (req, res, next) => {
         //user sends message to another user
         console.log('SEND MSG', req.body)
+        //first we find the TO user
         mongoose.model('User').findOne({
-            'user': req.body.to
-        }, function (err, usr) {
-            if (!usr || err) {
+            _id: req.body.to
+        }, function (err, tousr) {
+            if (!tousr || err) {
+                //no user!
                 console.log(usr, err)
-                res.send('err');
-            } else {
-                const msgId = Math.floor(Math.random() * 9999999999999999).toString(32);
-                usr.msgs.push({
-                    from: req.session.passport.user,
+                return res.send('err');
+            }
+            //give us a random "id", that'll be the same for both versions (to and from) of this site
+            const msgId = Math.floor(Math.random() * 9999999999999999).toString(32);
+            //now let's find our from user (current logged in)
+            mongoose.model('User').findOne({
+                _id: req.session.passport.user
+            }, function (err, fromusr) {
+                //we should now have a touser and a fromusr
+                fromusr.outBox.push({
+                    to: tousr.user,
                     date: Date.now(),
                     msg: req.body.msg,
                     msgId: msgId
                 })
-                usr.save(function (err, usr) {
-                    console.log('User updated!', usr, err)
-                    mongoose.model('User').findOne({
-                        user: req.session.passport.user
-                    }, function (err, fusr) {
-                        fusr.outBox.push({
-                            to: req.body.to,
-                            date: Date.now(),
-                            msg: req.body.msg,
-                            msgId: msgId
-                        })
+                tousr.msgs.push({
+                    from: fromusr.user,
+                    date: Date.now(),
+                    msg: req.body.msg,
+                    msgId: msgId
+                })
+                fromusr.save((ef,fu)=>{
+                    tousr.save((et,tu)=>{
                         io.emit('sentMsg', {
-                            user: req.body.to,
-                            from: req.session.passport.user
+                            to: tousr.user,
+                            from: fromusr.user
                         })
-                        fusr.save();
+                        res.send('done');
                     })
-                    res.send('done');
-                });
-            }
+                })
+            })
+
+
+
         });
     });
     router.get('/delMsg', this.authbit, (req, res, next) => {
@@ -475,11 +482,11 @@ const routeExp = function (io, pp) {
             usr.save((cerr, cusr) => {
                 console.log('err saving conf usr', cerr, 'User', cusr)
                 mongoose.model('User').find({}, function (err, usrs) {
-                    const badStuff = ['msgs','salt','googleId','pass']
+                    const badStuff = ['msgs', 'salt', 'googleId', 'pass']
                     res.send(_.cloneDeep(usrs).map(u => {
                         //we wanna remove all the sensitive info
-                        badStuff.forEach(d=>{
-                            if (!!u[d]){
+                        badStuff.forEach(d => {
+                            if (!!u[d]) {
                                 delete u[d];
                             }
                         })
@@ -489,7 +496,7 @@ const routeExp = function (io, pp) {
             })
         })
     })
-    router.get('/usrData',this.authbit, function (req, res, next) {
+    router.get('/usrData', this.authbit, function (req, res, next) {
         res.send(req.user);
     });
     // router.get('/chkLog', (req, res, next) => {
@@ -632,7 +639,7 @@ const routeExp = function (io, pp) {
                     return res.status(403).send('locked')
                 } else if (!usr.confirmed) {
                     return res.status(400).send('unconfirmed')
-                } 
+                }
             }
         })(req, res, next);
     });
