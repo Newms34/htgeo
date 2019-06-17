@@ -219,7 +219,7 @@ app.controller('cal-cont', function($scope, $http, $state) {
     });
     $scope.kindOpts = [{
         kind: 'lotto',
-        desc: 'An item or items will be given away by a [PAIN] member to one lucky guild member!',
+        desc: 'An item or items will be given away by a [GEO] member to one lucky guild member!',
         kindLong: 'Lottery/Giveaway'
     }, {
         kind: 'payLotto',
