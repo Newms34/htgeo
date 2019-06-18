@@ -234,6 +234,64 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     // We put the Data URI in the image's src attribute
     img.src = datas;
 }
+app.factory('socketFac', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () { 
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
+    $transitions.onBefore({ to: 'app.**' }, function(trans) {
+        let def = $q.defer();
+        console.log('TRANS',trans)
+        const usrCheck = trans.injector().get('userFact')
+        usrCheck.getUser().then(function(r) {
+            console.log('response from login chck',r)
+            if (r.data && r.data.confirmed) {
+                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
+                def.resolve(true)
+            } else if(r.data){
+                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
+            }else{
+                // User isn't authenticated. Redirect to a new Target State
+                def.resolve($state.target('appSimp.login', undefined, { location: true }))
+            }
+        }).catch(e=>{
+            def.resolve($state.target('appSimp.login', undefined, { location: true }))
+        });
+        return def.promise;
+    });
+    // $transitions.onFinish({ to: '*' }, function() {
+    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+    // });
+}]);
+app.factory('userFact', function($http) {
+    return {
+        getUser: function() {
+            return $http.get('/user/getUsr').then(function(s) {
+                console.log('getUser in fac says:', s)
+                return s;
+            })
+        }
+    };
+});
 app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
     $http.get('/user/getUsr')
         .then(r => {
@@ -1737,34 +1795,38 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
         }
     }
 });
-String.prototype.capMe = function() {
+String.prototype.capMe = function () {
     return this.slice(0, 1).toUpperCase() + this.slice(1);
 }
-app.controller('main-cont', function($scope, $http, $state,userFact) {
+app.controller('main-cont', function ($scope, $http, $state, userFact) {
     console.log('main controller registered!')
-    $scope.user=null;
-    userFact.getUser().then(r=>{
-        $scope.user=r.data;
+    $scope.user = null;
+    userFact.getUser().then(r => {
+        $scope.user = r.data;
         $scope.user.someRandVal = 'potato';
-    	//user sends their name to back
-    	socket.emit('hiIm',{name:$scope.user.user})
+        //user sends their name to back
+        socket.emit('hiIm', {
+            name: $scope.user.user
+        })
     })
     //used to see if this user is still online after a disconnect.
     //also used to see who ELSE is online
-    socket.on('reqHeartBeat',function(sr){
-        $scope.alsoOnline = sr.filter(q=>!$scope.user||!$scope.user.user||$scope.user.user!=q.name).map(m=>m.name);
+    socket.on('reqHeartBeat', function (sr) {
+        $scope.alsoOnline = sr.filter(q => !$scope.user || !$scope.user.user || $scope.user.user != q.name).map(m => m.name);
         // console.log('Users that are not this user online',$scope.alsoOnline)
         // console.log('$state is',$state)
-        if($scope.user && $scope.user.user && $state.current.name.includes('app.')){
-            socket.emit('hbResp',{name:$scope.user.user})
+        if ($scope.user && $scope.user.user && $state.current.name.includes('app.')) {
+            socket.emit('hbResp', {
+                name: $scope.user.user
+            })
         }
     })
     // socket.on('allNames',function(r){
     // 	$scope.online = r;
     // 	console.log('users now online are',r)
     // })
-    $scope.explMd = ()=>{
-        bulmabox.alert('Markdown',`<div class='is-size-2'>Markdown</div>
+    $scope.explMd = () => {
+        bulmabox.alert('Markdown', `<div class='is-size-2'>Markdown</div>
         <hr>
         <div class='is-size-5'>What It Is</div>
         <p>Markdown is a specialized way of formatting text, used by sites like Reddit, Stack Overflow, and apps like Discord.</p>
@@ -1820,8 +1882,60 @@ app.controller('main-cont', function($scope, $http, $state,userFact) {
         </tbody>
         </table>`)
     }
-})
+    $scope.sc = '';
+    $scope.seekrit = {
+        code: ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a', 'Space'],
+        on: false,
+        asking: false,
+        hist: [],
+        corrNum: 0,
+        whichFont: 0
+    };
 
+    $scope.fontOpts = ['aurebesh', 'tengwar quenya-1', 'klingon font', 'hieroglyphic', 'dovahkiin', 'Skyrim_Daedra'];
+    document.querySelector('body').addEventListener('keyup', function (e) {
+        e.preventDefault();
+        // console.log('KEY PRESSED WAS', e)
+        if ($scope.seekrit.asking) {
+            //asking kweschun, so ignore keypress
+            return false;
+        }
+        const nextCode = $scope.seekrit.code[$scope.seekrit.corrNum]; //the next correct code to be entered
+        if ((e.key.toLowerCase() != nextCode && e.code != nextCode)) {
+            //wrong code: return false and do nuffink
+            // $scope.seekrit.on=false;
+            // $scope.sc = '';
+            // $scope.seekrit.corrNum=0;
+            return false;
+        } else if ($scope.seekrit.corrNum + 1 === $scope.seekrit.code.length) {
+            //at end
+            $scope.seekrit.asking = true;
+            bulmabox.confirm('Toggle Secret Mode', 'Are you sure you wanna toggle the Secret Mode?', function (r) {
+                if (r && r !== null) {
+                    $scope.seekrit.on = !$scope.seekrit.on;
+                    if (!!$scope.seekrit.on) {
+                        let theFont = $scope.fontOpts[$scope.seekrit.whichFont];
+                        $scope.seekrit.whichFont++;
+                        if ($scope.seekrit.whichFont >= $scope.fontOpts.length) {
+                            $scope.seekrit.whichFont = 0;
+                        }
+                        $scope.sc = `*:not(.fa){font-family:${theFont},arial!important;}`;
+                    } else {
+                        $scope.sc = '';
+                    }
+                    $scope.$digest();
+                } else {
+                    $scope.sc = '';
+                    $scope.$digest();
+                }
+                $scope.seekrit.asking = false;
+                $scope.seekrit.corrNum = 0;
+            })
+        } else {
+            $scope.seekrit.corrNum++;
+        }
+    })
+})
 app.controller('nav-cont',function($scope,$http,$state){
 	$scope.logout = function() {
         bulmabox.confirm('Logout','Are you sure you wish to logout?', function(resp) {
@@ -2623,62 +2737,4 @@ app.controller('unconf-cont', function($scope, $http, $state) {
         })
     }
 })
-app.factory('socketFac', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () { 
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
-app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
-    $transitions.onBefore({ to: 'app.**' }, function(trans) {
-        let def = $q.defer();
-        console.log('TRANS',trans)
-        const usrCheck = trans.injector().get('userFact')
-        usrCheck.getUser().then(function(r) {
-            console.log('response from login chck',r)
-            if (r.data && r.data.confirmed) {
-                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
-                def.resolve(true)
-            } else if(r.data){
-                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
-            }else{
-                // User isn't authenticated. Redirect to a new Target State
-                def.resolve($state.target('appSimp.login', undefined, { location: true }))
-            }
-        }).catch(e=>{
-            def.resolve($state.target('appSimp.login', undefined, { location: true }))
-        });
-        return def.promise;
-    });
-    // $transitions.onFinish({ to: '*' }, function() {
-    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    // });
-}]);
-app.factory('userFact', function($http) {
-    return {
-        getUser: function() {
-            return $http.get('/user/getUsr').then(function(s) {
-                console.log('getUser in fac says:', s)
-                return s;
-            })
-        }
-    };
-});
 }());
