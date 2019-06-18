@@ -461,24 +461,8 @@ const routeExp = function (io, pp) {
                 res.send(err);
             }
             console.log('user to confirm is', usr)
-            let oldOrigUsr = oldUsers.find(u => u.user == req.query.u); //copy old users over so we dont have to
             usr.confirmed = true;
-            if (oldOrigUsr) {
-                console.log('Old user found! is', oldOrigUsr)
-                usr.tz = oldOrigUsr.tz;
-                usr.msgs = _.cloneDeep(oldOrigUsr.msgs);
-                usr.chars = _.cloneDeep(oldOrigUsr.chars);
-                usr.ints = _.cloneDeep(oldOrigUsr.ints);
-                usr.lastLogin = oldOrigUsr.lastLogin;
-                usr.otherInfo = oldOrigUsr.otherInfo;
-                usr.avatar = oldOrigUsr.avatar;
-                usr.outBox = oldOrigUsr.outBox;
-                usr.mod = !!oldOrigUsr.mod;
-                // um.create(oldOrigUsr, (err, nusr) => {
-                //     res.send(nusr);
-                // })
-                // usr = oldOrigUsr;
-            }
+        
             usr.save((cerr, cusr) => {
                 console.log('err saving conf usr', cerr, 'User', cusr)
                 mongoose.model('User').find({}, function (err, usrs) {
