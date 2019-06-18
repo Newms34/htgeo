@@ -7,7 +7,10 @@
                 <a href="#" ng-click='showTab(tab.name)' class=''>
                     <i class="fa fa-{{tab.icon}}"></i>&nbsp;
                     <span class="is-hidden-mobile">{{tab.name}}</span>&nbsp;
-                    <div class='button is-small is-rounded has-background-danger' ng-if='tab.name=="Mail" && numUnreadMsgs' title='You have {{numUnreadMsgs}} unread message{{numUnreadMsgs>1?"s":""}}!'>{{numUnreadMsgs}}</div>
+                    <div class='button is-small is-rounded has-background-danger'
+                        ng-if='tab.name=="Mail" && numUnreadMsgs'
+                        title='You have {{numUnreadMsgs}} unread message{{numUnreadMsgs>1?"s":""}}!'>{{numUnreadMsgs}}
+                    </div>
                 </a>
             </li>
         </ul>
@@ -44,14 +47,15 @@
                             <div class="field">
                                 <div class="file">
                                     <label class="file-label">
-                                        <input class='file-input' type="file" fileread="user.avatar" onchange="angular.element(this).scope().loadFile()" />
+                                        <input class='file-input' type="file" fileread="user.avatar"
+                                            onchange="angular.element(this).scope().loadFile()" />
                                         <span class="file-cta">
-                                    <span class="file-icon">
-                                        <i class="fa fa-upload"></i>
-                                    </span>
-                                        <span class="file-label">
-                                        {{fileName?fileName:'Change Profile Pic (optional)…'}}
-                                    </span>
+                                            <span class="file-icon">
+                                                <i class="fa fa-upload"></i>
+                                            </span>
+                                            <span class="file-label">
+                                                {{fileName?fileName:'Change Profile Pic (optional)…'}}
+                                            </span>
                                         </span>
                                     </label>
                                 </div>
@@ -63,7 +67,8 @@
                                 <div class="column is-one-fifth">Email: </div>
                                 <div class="field column is-four-fifths">
                                     <p class="control has-icons-left">
-                                        <input class="input" type="text" placeholder="Email" ng-model='user.email' ng-change='emailTimer()'>
+                                        <input class="input" type="text" placeholder="Email" ng-model='user.email'
+                                            ng-change='emailTimer()'>
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-envelope"></i>
                                         </span>
@@ -72,7 +77,8 @@
                                 <div class='column is-one-fifth'>Time Zone</div>
                                 <div class="column is-four-fifths">
                                     <div class="select is-small">
-                                        <select ng-model='user.tz' ng-options='tz.value as tz.text for tz in tzs' ng-change='changeTz()'>
+                                        <select ng-model='user.tz' ng-options='tz.value as tz.text for tz in tzs'
+                                            ng-change='changeTz()'>
                                             <!-- <option ng-repeat='tz in tzs' value='tz.abbr'>
                                         {{tz.value}} <span class="has-text-bold">(GMT{{tz.offset < 0 ?tz.offset:'+'+tz.offset}})</span>
                                     </option> -->
@@ -81,30 +87,36 @@
                                 </div>
                                 <div class='column is-one-fifth'>Password</div>
                                 <div class="column is-four-fifths" ng-if='!newPwd.changin'>
-                                    <button class="button has-background-light" ng-click='newPwd.changin=true;'>Change</button>
+                                    <button class="button has-background-light"
+                                        ng-click='newPwd.changin=true;'>Change</button>
                                 </div>
                                 <div class="field column is-four-fifths" ng-if='newPwd.changin'>
                                     <p class="control has-icons-left">
-                                        <input class="input" type="password" placeholder="Old password" ng-model='newPwd.old'>
+                                        <input class="input" type="password" placeholder="Old password"
+                                            ng-model='newPwd.old'>
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-unlock-alt"></i>
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
-                                        <input class="input" type="password" placeholder="New password" ng-model='newPwd.pwd'>
+                                        <input class="input" type="password" placeholder="New password"
+                                            ng-model='newPwd.pwd'>
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-lock"></i>
                                         </span>
                                     </p>
                                     <p class="control has-icons-left">
-                                        <input class="input" type="password" placeholder="New password (again)" ng-model='newPwd.pwdDup'>
+                                        <input class="input" type="password" placeholder="New password (again)"
+                                            ng-model='newPwd.pwdDup'>
                                         <span class="icon is-small is-left">
                                             <i class="fa fa-lock"></i>
                                         </span>
                                     </p>
                                     <p class="control">
-                                        <button class="button has-background-light" ng-click='editPwd()'>Save Password</button>
-                                        <button class="button has-background-grey-darker has-text-white" ng-click='clearPwd();'>Cancel</button>
+                                        <button class="button has-background-light" ng-click='editPwd()'>Save
+                                            Password</button>
+                                        <button class="button has-background-grey-darker has-text-white"
+                                            ng-click='clearPwd();'>Cancel</button>
                                     </p>
                                 </div>
                             </div>
@@ -121,12 +133,14 @@
                      -->
                         <i>Tell us what game modes you're interested in!</i>
                         <label class="checkbox" ng-repeat='pi in possibleInterests'>
-                            <input type="checkbox" ng-model='pi.active' ng-change='changeInterest(pi,$index)'>&nbsp;<img src="./img/interestIcons/{{pi.icon}}">&nbsp;{{pi.name}}
+                            <input type="checkbox" ng-model='pi.active' ng-change='changeInterest(pi,$index)'>&nbsp;<img
+                                src="./img/interestIcons/{{pi.icon}}">&nbsp;{{pi.name}}
                         </label>
                         <hr>
                         <i>Anything else we should know?</i>
                         <label class="label">
-                            <textarea class='textarea is-fullwidth' ng-model='user.otherInfo' ng-change='setOtherInfTimer()'></textarea>
+                            <textarea class='textarea is-fullwidth' ng-model='user.otherInfo'
+                                ng-change='setOtherInfTimer()'></textarea>
                         </label>
                     </div>
                 </div>
@@ -154,8 +168,10 @@
                         <td>{{chr.lvl}}</td>
                         <td>{{chr.other}}</td>
                         <td>
-                            <button class="button is-small is-link" title='Edit' ng-click='editChar(chr)'><i class='fa fa-pencil'></i></button>&nbsp;
-                            <button class="button is-small is-danger" title='Remove' ng-click='delChr(chr)'><i class='fa fa-times'></i></button>
+                            <button class="button is-small is-link" title='Edit' ng-click='editChar(chr)'><i
+                                    class='fa fa-pencil'></i></button>&nbsp;
+                            <button class="button is-small is-danger" title='Remove' ng-click='delChr(chr)'><i
+                                    class='fa fa-times'></i></button>
                         </td>
                     </tr>
                     <tr ng-if='!user.chars.length'>
@@ -165,8 +181,10 @@
                     </tr>
                     <tr>
                         <td colspan='6'>
-                            <button class="button is-light" ng-click='addChar()'><i class='fa fa-plus'></i>&nbsp;Add Character</button>&nbsp;
-                            <button class="button is-grey-md has-text-white" ng-click='autoChars()'><i class="fa fa-cogs"></i>&nbsp;Auto-Populate</button>
+                            <button class="button is-light" ng-click='addChar()'><i class='fa fa-plus'></i>&nbsp;Add
+                                Character</button>&nbsp;
+                            <button class="button is-grey-md has-text-white" ng-click='autoChars()'><i
+                                    class="fa fa-cogs"></i>&nbsp;Auto-Populate</button>
                         </td>
                     </tr>
                 </tbody>
@@ -194,7 +212,8 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat='msg in user.msgs'>
-                                <td><i class="fa fa-exclamation-triangle" ng-if='msg.isRep' title="You've reported this message."></i></td>
+                                <td><i class="fa fa-exclamation-triangle" ng-if='msg.isRep'
+                                        title="You've reported this message."></i></td>
                                 <td ng-class='{"has-text-danger":msg.from=="System"}'>
                                     {{msg.from}}
                                 </td>
@@ -202,13 +221,16 @@
                                     {{msg.date|numToDate}}
                                 </td>
                                 <td>
-                                    <button class="button is-small is-info" title='View Message' ng-click='viewMsg(msg)'>
+                                    <button class="button is-small is-info" title='View Message'
+                                        ng-click='viewMsg(msg)'>
                                         <i class="fa fa-eye"></i>
                                     </button>&nbsp;
-                                    <button class="button is-small is-default" title='Delete Message' ng-click='delMsg(msg)'>
+                                    <button class="button is-small is-light" title='Delete Message'
+                                        ng-click='delMsg(msg)'>
                                         <i class="fa fa-trash"></i>
                                     </button>&nbsp;
-                                    <button class="button is-small is-danger" title='Report Message' ng-click='repMsg(msg)' ng-disabled='msg.isRep' ng-show='msg.from!="System"'>
+                                    <button class="button is-small is-danger" title='Report Message'
+                                        ng-click='repMsg(msg)' ng-disabled='msg.isRep' ng-show='msg.from!="System"'>
                                         <i class="fa fa-exclamation"></i>
                                     </button>
                                 </td>
@@ -216,7 +238,7 @@
                             <tr ng-if='!user.msgs.length'>
                                 <td colspan='4'>
                                     <i>
-                                    You have no messages right now!
+                                        You have no messages right now!
                                     </i>
                                 </td>
                             </tr>
@@ -234,7 +256,8 @@
                         </thead>
                         <tbody>
                             <tr ng-repeat='msg in user.outBox'>
-                                <td><i class="fa fa-exclamation-triangle" ng-if='msg.isRep' title='This message was reported to the moderator team'></i></td>
+                                <td><i class="fa fa-exclamation-triangle" ng-if='msg.isRep'
+                                        title='This message was reported to the moderator team'></i></td>
                                 <td>
                                     {{msg.to}}
                                 </td>
@@ -242,10 +265,12 @@
                                     {{msg.date|numToDate}}
                                 </td>
                                 <td>
-                                    <button class="button is-small is-info" title='View Message' ng-click='viewMsg(msg,true)'>
+                                    <button class="button is-small is-info" title='View Message'
+                                        ng-click='viewMsg(msg,true)'>
                                         <i class="fa fa-eye"></i>
                                     </button>&nbsp;
-                                    <button class="button is-small is-default" title='Delete Message' ng-click='delMyMsg(msg)'>
+                                    <button class="button is-small is-light" title='Delete Message'
+                                        ng-click='delMyMsg(msg)'>
                                         <i class="fa fa-trash"></i>
                                     </button>&nbsp;
                                 </td>
@@ -253,7 +278,7 @@
                             <tr ng-if='!user.outBox.length'>
                                 <td colspan='4'>
                                     <i>
-                                    You have no messages right now!
+                                        You have no messages right now!
                                     </i>
                                 </td>
                             </tr>
@@ -285,20 +310,30 @@
                     <tr>
                         <th>&nbsp;</th>
                         <th>Name
-                            <button class='button is-tiny is-grey' ng-click='memNameSort=!memNameSort'><i class="fa fa-caret-up" ng-if='memNameSort'></i><i class="fa fa-caret-down" ng-if='!memNameSort'></i></button>
+                            <button class='button is-tiny is-grey' ng-click='memNameSort=!memNameSort'><i
+                                    class="fa fa-caret-up" ng-if='memNameSort'></i><i class="fa fa-caret-down"
+                                    ng-if='!memNameSort'></i></button>
                         </th>
                         <th>Send Message</th>
                         <th>Characters
-                            <button class="button is-tiny" ng-click='charSearchToggle=!charSearchToggle'><i class="fa fa-search"></i></button>
-                            <input type="text" class='input hideable-input' ng-model='charSearch' ng-class="{'hide-input':!charSearchToggle}">
+                            <button class="button is-tiny" ng-click='charSearchToggle=!charSearchToggle'><i
+                                    class="fa fa-search"></i></button>
+                            <input type="text" class='input hideable-input' ng-model='charSearch'
+                                ng-class="{'hide-input':!charSearchToggle}">
                         </th>
                         <th>Game Modes
-                            <button class="button is-tiny" ng-click='intSearchToggle=!intSearchToggle'><i class="fa fa-search"></i></button>
+                            <button class="button is-tiny" ng-click='intSearchToggle=!intSearchToggle'><i
+                                    class="fa fa-search"></i></button>
                             <div class='hideable-input card' ng-class="{'hide-input':!intSearchToggle}">
                                 <h4>Sort by Game Mode</h4>
-                                <button class='button is-small int-srch-btn' title='{{pi.name}}' ng-repeat='pi in possibleInterests' style='background-image: url("./img/interestIcons/{{pi.icon}}");' ng-class="{'has-background-grey-darker':pickedInts[$index]==true}" ng-click='pickedInts[$index]=!pickedInts[$index]'>&nbsp;</button>
+                                <button class='button is-small int-srch-btn' title='{{pi.name}}'
+                                    ng-repeat='pi in possibleInterests'
+                                    style='background-image: url("./img/interestIcons/{{pi.icon}}");'
+                                    ng-class="{'has-background-grey-darker':pickedInts[$index]==true}"
+                                    ng-click='pickedInts[$index]=!pickedInts[$index]'>&nbsp;</button>
                                 <br>
-                                <button class='button has-background-grey' ng-click='pickedInts=[false,false,false,false,false,false]'>Reset</button>
+                                <button class='button has-background-grey'
+                                    ng-click='pickedInts=[false,false,false,false,false,false]'>Reset</button>
                             </div>
                         </th>
                         <th>Acct Status</th>
@@ -306,28 +341,41 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat='u in allUsers|filter:memFilter | orderBy:name:memNameSort' ng-if='u.user!=user.user || showDups'>
-                        <td><i class="fa fa-circle" style='color:{{u.online?"#0f0":"#300"}};' title='{{u.user}} is {{u.online?"":"not "}}online!'></i></td>
+                    <tr ng-repeat='u in allUsers|filter:memFilter | orderBy:name:memNameSort'
+                        ng-if='u.user!=user.user || showDups'>
+                        <td><i class="fa fa-circle" style='color:{{u.online?"#0f0":"#300"}};'
+                                title='{{u.user}} is {{u.online?"":"not "}}online!'></i></td>
                         <td><img class='usr-list-pic' src="{{u.avatar||defaultPic}}">
                             <br>{{u.user}}</td>
                         <td>
-                            <button class="button is-info is-fullwidth" title='Send a message to this user' ng-click='mail(u)'><i class="fa fa-envelope-o"></i></button>
+                            <button class="button is-info is-fullwidth" title='Send a message to this user'
+                                ng-click='mail(u)'><i class="fa fa-envelope-o"></i></button>
                         </td>
                         <td style='height:150px; {{u.chars.length?"overflow-y: scroll;display:block;":""}} '>
                             <div class='is-fullwidth chr-list' ng-repeat='chr in u.chars'>
-                                <div class='is-fullwidth is-size-7'><img src="./img/races/{{chr.race}}.png" class='char-stat-img'>&nbsp;{{chr.race}}&nbsp;<img src="./img/profs/{{chr.prof}}.png" class='char-stat-img'>&nbsp;{{chr.prof}}&nbsp;</div>
+                                <div class='is-fullwidth is-size-7'><img src="./img/races/{{chr.race}}.png"
+                                        class='char-stat-img'>&nbsp;{{chr.race}}&nbsp;<img
+                                        src="./img/profs/{{chr.prof}}.png"
+                                        class='char-stat-img'>&nbsp;{{chr.prof}}&nbsp;</div>
                                 <div class='is-fullwidth'>
                                     {{chr.name}} ({{chr.lvl}})</div>
                             </div>
                         </td>
                         <td>
-                            <img src="./img/interestIcons/{{intr.icon}}" title='{{intr.name}}' ng-repeat='intr in possibleInterests' ng-if='u.ints[$index]=="1"'>
+                            <img src="./img/interestIcons/{{intr.icon}}" title='{{intr.name}}'
+                                ng-repeat='intr in possibleInterests' ng-if='u.ints[$index]=="1"'>
                         </td>
                         <td>
-                            <button ng-if='user.mod' class="button is-success" ng-disabled='u.mod' title='{{u.mod?"This user is already a moderator":"Make this user a moderator"}}' ng-click='makeMod(u)'>Make Moderator</button>
-                            <button ng-if='user.mod' class="button is-danger" ng-disabled='u.mod' title='{{u.mod?"Cannot ban/unban a moderator!":"Ban/Unban this user"}}' ng-click='toggleBan(u)'>{{u.isBanned?'Unban':'Ban'}}</button>
-                            <i class='fa fa-square-o' ng-if='!user.mod && !u.mod'></i><i class='fa fa-check-square-o' ng-if='!user.mod && u.mod'></i>
-                            <i class='fa fa-square-o' ng-if='!user.mod && !u.isBanned'></i><i class='fa fa-check-square-o' ng-if='!user.mod && u.isBanned'></i>
+                            <button ng-if='user.mod' class="button is-success" ng-disabled='u.mod'
+                                title='{{u.mod?"This user is already a moderator":"Make this user a moderator"}}'
+                                ng-click='makeMod(u)'>Make Moderator</button>
+                            <button ng-if='user.mod' class="button is-danger" ng-disabled='u.mod'
+                                title='{{u.mod?"Cannot ban/unban a moderator!":"Ban/Unban this user"}}'
+                                ng-click='toggleBan(u)'>{{u.isBanned?'Unban':'Ban'}}</button>
+                            <i class='fa fa-square-o' ng-if='!user.mod && !u.mod'></i><i class='fa fa-check-square-o'
+                                ng-if='!user.mod && u.mod'></i>
+                            <i class='fa fa-square-o' ng-if='!user.mod && !u.isBanned'></i><i
+                                class='fa fa-check-square-o' ng-if='!user.mod && u.isBanned'></i>
                             <button ng-if='user.mod && !u.confirmed' class='button is-info' ng-click='confirmUsr(u);'>
                                 Confirm User
                             </button>
@@ -338,6 +386,41 @@
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="modal" ng-class='{"is-active":msgView.active}'>
+        <!-- the modal view-student-exercise window -->
+        <div class="modal-background"></div>
+        <div class="modal-content wide-modal">
+            <div class="panel">
+                <div class="panel-heading has-background-grey-darker has-text-white has-text-weight-bold">
+                    Message <span ng-if='msgView.msg.to'>to {{msgView.msg.to}}</span><span ng-if='msgView.msg.from'>to
+                        {{msgView.msg.from}}</span>
+                    <button class="button is-danger is-small is-pulled-right" ng-click='msgView.active=false'>x</button>
+                </div>
+                <div class="panel-block has-background-white blocky content">
+                    <br>
+                    <div class="is-fullwidth" ng-show='msgView.msg.from'>
+                        <button class="button is-link is-small" title='Reply to this message'
+                            ng-click='replyMsg(msgView.msg)'><i class="fa fa-mail-reply"></i></button>
+                        <button class="button is-dark is-small" title='Delete this message'
+                            ng-click='delMsg(msgView.msg,true)'><i class="fa fa-trash"></i></button>
+                        <button class="button is-danger is-small" title='Report this message to the mod team'
+                            ng-click='repMsg(msgView.msg,true)'><i class="fa fa-exclamation"></i></button>
+                    </div>
+                    <div class="is-fullwidth" ng-show='!msgView.msg.from'>
+                        <button class="button is-dark is-small" title='Delete this message'
+                            ng-click='delMyMsg(msgView.msg,true)'><i class="fa fa-trash"></i></button>
+                    </div>
+                    <hr>
+                    <div ng-bind-html='msgView.msg.msg|markdown'>
+                        <!-- {{msgView.msg.msg|markdown}} -->
+
+                    </div>
+                    <hr>
+                    <button class="button is-info" ng-click='clearMsg();'>Okay!</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

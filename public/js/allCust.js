@@ -860,7 +860,7 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
     console.log('CHAT SCOPE',$scope);
     // $scope.$onDestroy()
 })
-app.controller('dash-cont', function($scope, $http, $state, $filter) {
+app.controller('dash-cont', function ($scope, $http, $state, $filter) {
         $scope.showDups = localStorage.brethDups; //show this user in 'members' list (for testing)
         $http.get('/user/usrData')
             .then(r => {
@@ -884,7 +884,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
             })
             $scope.numUnreadMsgs = u.msgs.filter(m => !m.read).length;
         }
-        socket.on('sentMsg', function(u) {
+        socket.on('sentMsg', function (u) {
             console.log('SOCKET USER', u, 'this user', $scope.user)
             if (u.user == $scope.user.user || u.from == $scope.user.user) {
                 console.log('re-getting user')
@@ -964,7 +964,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                 bulmabox.alert('Game Mode Warning', `Hey! Just so you know, [GEO] generally doesn't do ${intrst.name}.<br>However, that doesn't mean we don't have people that might be interested!`);
             }
             $http.get(`/user/changeInterest?int=${ind}&act=${intrst.active}`)
-                .then(function(r) {
+                .then(function (r) {
                     $scope.doUser(r.data);
                 })
         }
@@ -979,8 +979,10 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
             if ($scope.otherInfTimer) {
                 clearTimeout($scope.otherInfTimer);
             }
-            $scope.otherInfTimer = setTimeout(function() {
-                $http.post('/user/changeOther', { other: $scope.user.otherInfo })
+            $scope.otherInfTimer = setTimeout(function () {
+                $http.post('/user/changeOther', {
+                        other: $scope.user.otherInfo
+                    })
                     .then(r => {
                         $scope.doUser(r.data);
                     })
@@ -1017,12 +1019,12 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
             .then((au) => {
                 console.log('all users is', au)
                 $scope.allUsers = au.data;
-                setTimeout(function() {
+                setTimeout(function () {
 
                     socket.emit('getOnline', {});
                 }, 100)
             });
-        socket.on('allNames', function(r) {
+        socket.on('allNames', function (r) {
             // console.log('ALL NAMES SOCKET SAYS', r)
             r = r.map(nm => nm.name);
             if ($scope.allUsers) {
@@ -1039,7 +1041,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         //admin stuffs
         $scope.makeMod = (u) => {
             console.log('wanna mod', u);
-            bulmabox.confirm(`Assign Moderator Rights`, `Warning: This will give user ${u.user} full moderator rights, and prevents them from being banned. This process is <i>not</i> reversable!`, function(r) {
+            bulmabox.confirm(`Assign Moderator Rights`, `Warning: This will give user ${u.user} full moderator rights, and prevents them from being banned. This process is <i>not</i> reversable!`, function (r) {
                 if (!r || r == null) {
                     return false;
                 } else {
@@ -1117,7 +1119,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         <textarea class='textarea' id='char-other' placeholder='Any other information you wanna include (optional)'></textarea>
     </p>
 </div>`,
-                function() {
+                function () {
                     const theProf = document.querySelector('input[name=char-prof]:checked'),
                         theRace = document.querySelector('input[name=char-race]:checked'),
                         theName = document.querySelector('#char-name');
@@ -1141,7 +1143,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         }
         $scope.autoChars = () => {
             //B9DE7B9E-9DAD-2C40-BECD-12F9BA931FE0851EA3EB-B1AA-4FBB-B4BE-CCDD28F51644
-            bulmabox.prompt('Auto-Fill Characters from API', `Auto-filling characters from the Guild Wars 2 Official API will replace any existing characters you've entered with API-found characters. <br><br> - You'll need an API key to do this (click <a href='https://account.arena.net/' target='_blank'>here</a> if you dont have one). <br><br>Are you sure you wish to do this?`, function(resp) {
+            bulmabox.prompt('Auto-Fill Characters from API', `Auto-filling characters from the Guild Wars 2 Official API will replace any existing characters you've entered with API-found characters. <br><br> - You'll need an API key to do this (click <a href='https://account.arena.net/' target='_blank'>here</a> if you dont have one). <br><br>Are you sure you wish to do this?`, function (resp) {
                 if (resp && resp != null) {
                     $http.get('/user/charsFromAPI?api=' + resp)
                         .then(r => {
@@ -1157,7 +1159,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         }
         $scope.delChr = (chr) => {
             console.log('user wishes to remove character', chr)
-            bulmabox.confirm('Remove Character', `Are you sure you wish to remove the character ${chr.name}?`, function(resp) {
+            bulmabox.confirm('Remove Character', `Are you sure you wish to remove the character ${chr.name}?`, function (resp) {
                 if (resp && resp != null) {
                     $http.get('/user/remChar?id=' + chr._id)
                         .then(r => {
@@ -1219,7 +1221,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         <textarea class='textarea' id='char-other' placeholder='Any other information you wanna include (optional)'>${chr.other}</textarea>
     </p>
 </div>`,
-                function(resp) {
+                function (resp) {
                     //send event!
                     // const title = document.querySelector('#newTitle').value,
                     // text = document.querySelector('#newMsg').value;
@@ -1244,10 +1246,11 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                         })
                 }, `<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Save</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`)
         }
-        $scope.mail = (usr) => {
-
+        $scope.mail = (usr, oldMsg) => {
+            let msgReply = oldMsg? `<div class='notification'>${oldMsg}</div>`:'';
             bulmabox.custom('Send Message',
                 `<div class="field">
+                ${msgReply}
     <label class='label'>
         Message
     </label>
@@ -1255,25 +1258,66 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
         <textarea class='textarea' id='newMsg' placeholder='What do you wanna say?'></textarea>
     </p>
 </div>`,
-                function(resp) {
+                function (resp) {
                     //send event!
                     // const title = document.querySelector('#newTitle').value,
                     // text = document.querySelector('#newMsg').value;
-                    const theMsg = document.querySelector('#newMsg').value;
+                    let theMsg = document.querySelector('#newMsg').value;
                     if (!theMsg) {
                         bulmabox.alert('Huh?', 'Sorry, but we don\'t support uncomfortable silences currently.');
                         return false;
                     }
-                    $http.post('/user/sendMsg', { msg: theMsg, to: usr._id })
+                    if (!!oldMsg) {
+                        theMsg = `<div class='notification'>${oldMsg}</div><br>${theMsg}`;
+                    }
+                    console.log('old',oldMsg,'new',theMsg)
+                    // return false;
+                    $http.post('/user/sendMsg', {
+                            msg: theMsg,
+                            to: usr._id
+                        })
                         .then((r) => {
                             //done
                         })
                 }, `<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Send</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`)
         }
-        $scope.viewMsg = (m, t) => {
+        $scope.msgView = {
+            active: false,
+            msg: null,
+            mine: false,
+        }
+        $scope.clearMsg = () => {
+            $scope.msgView = {
+                active: false,
+                msg: null,
+                mine: false,
+            }
+            // $scope.$digest();
+        }
+        $scope.viewMsg = (m) => {
             console.log('msg object', m)
-            bulmabox.alert(`Message ${t?'to':'from'} ${t?m.to:m.from}`, m.msg || '(No message)')
-            if (t) {
+            const conv = new showdown.Converter(),
+                mdMsg = conv.makeHtml(m.msg);
+            $scope.msgView.active = true;
+            $scope.msgView.mine = true;
+            $scope.msgView.msg = m;
+            // bulmabox.custom(`Message from ${m.from}`, mdMsg || '(No message)',function(q){
+            //     let id=q.slice(q.indexOf(' ')+1);
+            //     console.log('user wants to',q, 'with id',id);
+            //     if(q.includes('delete ')){
+            //         $scope.delMsg(id);
+            //     }else if(q.includes('report')){
+            //         $scope.repMsg(id);
+            //     }else if(q.includes('reply')){
+            //         $scope.replyMsg(id);
+            //     }
+            // },`
+            // <button class='button is-success' onclick="bulmabox.kill('bulmabox-diag')">Okay!</button>
+            // <button class='button is-info' onclick="bulmabox.runCb(bulmabox.params.cb,'reply ${m._id}')"><i class='fa fa-mail-reply'></i>&nbsp;Reply</button>
+            // <button class='button is-white' onclick="bulmabox.runCb(bulmabox.params.cb,'delete ${m._id}')"><i class='fa fa-trash'></i>&nbsp;Trash</button>
+            // <button class='button is-danger' onclick="bulmabox.runCb(bulmabox.params.cb,'report ${m._id}')"><i class='fa fa-exclamation'></i>&nbsp;Report</button>
+            // `)
+            if(m.to){
                 return false;
             }
             $http.get('/user/setOneRead?id=' + m._id)
@@ -1281,36 +1325,67 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                     $scope.doUser(r.data);
                 })
         }
-        socket.on('reqHeartBeat',sr=>{
-            $scope.alsoOnline = sr.filter(q=>!$scope.user||!$scope.user.user||$scope.user.user!=q.name).map(m=>m.name);
-            if($scope.allUsers)
-            $scope.allUsers.forEach(u=>{
-                u.online  = $scope.alsoOnline.includes(u.user)
-            })
+        socket.on('reqHeartBeat', sr => {
+            $scope.alsoOnline = sr.filter(q => !$scope.user || !$scope.user.user || $scope.user.user != q.name).map(m => m.name);
+            if ($scope.allUsers)
+                $scope.allUsers.forEach(u => {
+                    u.online = $scope.alsoOnline.includes(u.user)
+                })
         })
-        $scope.delMsg = (m) => {
+        $scope.delMsg = (m, t) => {
+            if (typeof m != 'object') {
+                m = {
+                    _id: m
+                }
+            }
             bulmabox.confirm('Delete Message', 'Are you sure you wish to delete this message?', (resp) => {
                 console.log('resp', resp);
                 if (resp && resp != null) {
+                    // return console.log('User would delete msg',m)
                     $http.get('/user/delMsg?id=' + m._id)
                         .then(r => {
                             $scope.doUser(r.data);
+                            if (t) {
+                                $scope.clearMsg();
+                            }
                         })
                 }
             })
         }
-        $scope.delMyMsg = (m) => {
+        $scope.delMyMsg = (m, t) => {
+            if (typeof m != 'object') {
+                m = {
+                    _id: m
+                }
+            }
             bulmabox.confirm('Delete Message', 'Are you sure you wish to delete this message?', (resp) => {
                 console.log('resp', resp);
                 if (resp && resp != null) {
+                    // return console.log('User would delete msg',m)
                     $http.get('/user/delMyMsg?id=' + m._id)
                         .then(r => {
                             $scope.doUser(r.data);
+                            if (t) {
+                                $scope.clearMsg();
+                            }
                         })
                 }
             })
         }
-        $scope.repMsg = (m) => {
+        $scope.replyMsg = m => {
+            console.log('User wants to reply to message', m);
+            const conv = new showdown.Converter(),
+                repTxt = conv.makeHtml(m.msg),
+                fromUsr = $scope.allUsers.find(q => q.user == m.from);
+            $scope.mail(fromUsr,repTxt);
+            $scope.clearMsg();
+        }
+        $scope.repMsg = (m, t) => {
+            if (typeof m != 'object') {
+                m = {
+                    _id: m
+                }
+            }
             console.log('user wishes to report msg', m)
             bulmabox.confirm('Report Message', 'Reporting a message sends a notification to the moderators, including the details of the message.<br>It will then be up to the moderators to determine if you\'re being uncool to each other.<br>Are you sure you wish to report this message?', (resp) => {
                 $http.post('/user/repMsg', m)
@@ -1318,6 +1393,9 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                         //done
                         if (r.data == 'dupRep') {
                             bootbox.alert("Already Reported", "You've already reported this message. Please wait while the moderator team reviews your report.")
+                        }
+                        if (t) {
+                            $scope.clearMsg();
                         }
                     })
             })
@@ -1336,17 +1414,17 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
                 changin: false
             }
         }
-        $scope.editPwd = ()=>{
-            if(!$scope.newPwd.pwd || !$scope.newPwd.pwdDup || $scope.newPwd.pwd != $scope.newPwd.pwdDup){
-            bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Password Mismatch', 'Your passwords don\'t match, or are missing!');
-            }else{
-                $http.post('/user/editPwd',$scope.newPwd).then(r=>{
-                    if(r.data && r.data!='err'){
+        $scope.editPwd = () => {
+            if (!$scope.newPwd.pwd || !$scope.newPwd.pwdDup || $scope.newPwd.pwd != $scope.newPwd.pwdDup) {
+                bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Password Mismatch', 'Your passwords don\'t match, or are missing!');
+            } else {
+                $http.post('/user/editPwd', $scope.newPwd).then(r => {
+                    if (r.data && r.data != 'err') {
                         $scope.clearPwd();
-                        bulmbox.alert('Password Changed!','Your password was successfully changed!')
+                        bulmbox.alert('Password Changed!', 'Your password was successfully changed!')
                         $scope.doUser(r.data)
-                    }else{
-                        bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Error Changing Password','There was a problem changing your password. Your old one probably still works, but if you\'re still having an issue, contact a moderator!')
+                    } else {
+                        bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Error Changing Password', 'There was a problem changing your password. Your old one probably still works, but if you\'re still having an issue, contact a moderator!')
                     }
                 })
             }
@@ -1359,7 +1437,7 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
             if ($scope.updEmail) {
                 clearTimeout($scope.updEmail);
             }
-            $scope.updEmail = setTimeout(function() {
+            $scope.updEmail = setTimeout(function () {
                 console.log($scope.user.email);
                 $http.get('/user/setEmail?email=' + $scope.user.email)
                     .then(r => {
@@ -1371,8 +1449,8 @@ app.controller('dash-cont', function($scope, $http, $state, $filter) {
             }, 500);
         }
     })
-    .filter('numToDate', function() {
-        return function(num) {
+    .filter('numToDate', function () {
+        return function (num) {
             if (isNaN(num)) {
                 return 'Invalid date!';
             }
