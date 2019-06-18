@@ -1,7 +1,7 @@
 app.controller('forum-cont', function($scope, $http, $state,$sce) {
     $scope.currMsg = 0;
     $scope.forObj = {};
-    if (!localStorage.brethUsr) {
+    if (!localStorage.geoUsr) {
         $state.go('app.login');
         //since we really cannot do anything here if user is NOT logged in
     }

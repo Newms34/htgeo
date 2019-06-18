@@ -108,7 +108,7 @@ passport.use('local-login', new LocalStrategy({
         User.findOne({
             'user': user
         }, function (err, usrFnd) {
-            console.log(usrFnd)
+            // console.log(usrFnd)
             // if there are any errors, return the error before anything else
             if (err) {
                 return done(err, false, false);
@@ -127,10 +127,12 @@ passport.use('local-login', new LocalStrategy({
             } else {
 
                 usrFnd.wrongAttempts = 0;
+                let oldLastLogin = usrFnd.lastLogin ||0;
                 usrFnd.lastLogin = Date.now();
                 usrFnd.save((errsv, usv) => {
                     // all is well, return successful user
-                    return done(null, usv, true);
+                    // usv.oldLastLogin = oldLastLogin;
+                    return done(null, {u:usv,oll:oldLastLogin}, true);
                 });
             }
         });

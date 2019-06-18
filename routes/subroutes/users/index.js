@@ -49,7 +49,7 @@ const routeExp = function (io, pp) {
             mongoose.model('User').findOne({
                 _id: req.session.passport.user
             }, function (err, usr) {
-                console.log(err, usr)
+                // console.log(err, usr)
                 if (!err && usr && !usr.isBanned && !usr.locked) {
                     usr.lastAction = new Date().toLocaleString();
                     usr.save((errsv, usv) => {
@@ -85,7 +85,7 @@ const routeExp = function (io, pp) {
                         u[d] = null;
                     }
                 })
-                console.log('user after removal', u, typeof u, u['pass'])
+                // console.log('user after removal', u, typeof u, u['pass'])
                 return u;
             }));
         })
@@ -333,8 +333,8 @@ const routeExp = function (io, pp) {
                     msg: req.body.msg,
                     msgId: msgId
                 })
-                fromusr.save((ef,fu)=>{
-                    tousr.save((et,tu)=>{
+                fromusr.save((ef, fu) => {
+                    tousr.save((et, tu) => {
                         io.emit('sentMsg', {
                             to: tousr.user,
                             from: fromusr.user
@@ -462,7 +462,7 @@ const routeExp = function (io, pp) {
             }
             console.log('user to confirm is', usr)
             usr.confirmed = true;
-        
+
             usr.save((cerr, cusr) => {
                 console.log('err saving conf usr', cerr, 'User', cusr)
                 mongoose.model('User').find({}, function (err, usrs) {
@@ -553,8 +553,6 @@ const routeExp = function (io, pp) {
     //             'user': req.body.user
     //         }, function (err, usr) {
     //             if (!err && usr && !usr.isBanned && usr.correctPassword(req.body.pass)) {
-    //                 const prevLog = usr.lastLogin;
-    //                 usr.lastLogin = Date.now();
     //                 // usr.lastLogin=0;
     //                 const lastNews = fs.readFileSync('./news.txt', 'utf8').split(/\n/);
     //                 console.log('NEWS', lastNews, lastNews - prevLog);
@@ -567,6 +565,8 @@ const routeExp = function (io, pp) {
     //                 delete req.session.user.salt;
     //                 delete req.session.user.reset;
     //                 delete req.session.user.email;
+    //                 const prevLog = usr.lastLogin;
+    //                 usr.lastLogin = Date.now();
     //                 usr.save((err, usrsv) => {
     //                     res.send({
     //                         usr: req.session.user,
@@ -586,11 +586,12 @@ const routeExp = function (io, pp) {
     //         res.status(401).send('DIDNT WORK')
     //     });
     router.post('/login', function (req, res, next) {
-        // truncus('req.body', req.body)
+        console.log('req.body', req.body)
         if (!req.body || !req.body.pass || !req.body.user) {
             return res.send(false);
         }
-        passport.authenticate('local-login', function (err, usr, info) {
+        passport.authenticate('local-login', function (err, uObj, info) {
+            let usr = uObj.u;
             console.log('err', err, 'usr IS', usr, 'inf', info, 'pass candidate', req.body.pass, 'correct?')
             if (!info) {
                 //wrong un/pwd combo
@@ -613,9 +614,25 @@ const routeExp = function (io, pp) {
                     req.session.passport = {
                         user: usr._id
                     };
-                    usr.pass = null;
-                    usr.salt = null;
-                    res.send(usr);
+                    // usr.pass = null;
+                    // usr.salt = null;
+                    // return res.send('done')
+                    const lastNews = fs.readFileSync('./news.txt', 'utf8').split(/\n/);
+                    // console.log(fs.lstatSync('./news.txt'))
+                    let news = null;
+                    let mtime = new Date(fs.lstatSync('./news.txt').mtime).getTime();
+                    // const prevLog = usr.lastLogin || 0;
+                    // const prevLog = 0
+                    console.log('TIME DIF: latest news time',mtime,'last login was',uObj.oll,'dif is',mtime-uObj.oll,'Now is',Date.now())
+                    if ((mtime - uObj.oll) > 1000) {
+                        news = lastNews.map(d => d.replace(/\r/, ''));
+                    }
+                    usr.pass=null;
+                    usr.salt=null;
+                        res.send({
+                            usr: usr,
+                            news: news,
+                        })
                 }
                 if (usr.isBanned) {
                     return res.status(403).send('banned');

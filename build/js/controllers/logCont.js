@@ -1,7 +1,7 @@
 app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
     $scope.noWarn = false;
     $scope.nameOkay = true;
-    delete localStorage.brethUsr;
+    delete localStorage.geoUsr;
     $scope.checkTimer = false;
     $scope.goReg = () => {
         $state.go('appSimp.register')
@@ -27,6 +27,7 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
         })
     }
     $scope.signin = () => {
+        console.log('trying to login with',$scope.user,$scope.pwd)
         $http.post('/user/login', { user: $scope.user, pass: $scope.pwd })
             .then((r) => {
                 console.log(r);
@@ -38,10 +39,10 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                     // delete r.data.msgs;
                     console.log('LOGIN RESPONSE',r.data)
                     socket.emit('chatMsg', { msg: `${$scope.user} logged in!` })
+                    localStorage.geoUsr = JSON.stringify(r.data.usr);
                     if(r.data.news){
                         bulmabox.alert('Updates/News',`Since you last logged in, the following updates have been implemented:<br><ul style='list-style:disc;'><li>${r.data.news.join('</li><li>')}</li></ul>`)
                     }
-                    localStorage.brethUsr = JSON.stringify(r.data.usr);
                     $state.go('app.dash');
                 }
             })

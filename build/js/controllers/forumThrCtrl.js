@@ -3,7 +3,7 @@ app.controller('forum-thr-cont', function ($scope, $http, $state, $location, $sc
     $scope.defaultPic = defaultPic;
     $scope.forObj = {};
     $scope.fileName = null
-    if (!localStorage.brethUsr) {
+    if (!localStorage.geoUsr) {
         $state.go('app.login');
         //since we really cannot do anything here if user is NOT logged in
     }

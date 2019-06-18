@@ -234,64 +234,6 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     // We put the Data URI in the image's src attribute
     img.src = datas;
 }
-app.factory('socketFac', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () { 
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
-app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
-    $transitions.onBefore({ to: 'app.**' }, function(trans) {
-        let def = $q.defer();
-        console.log('TRANS',trans)
-        const usrCheck = trans.injector().get('userFact')
-        usrCheck.getUser().then(function(r) {
-            console.log('response from login chck',r)
-            if (r.data && r.data.confirmed) {
-                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
-                def.resolve(true)
-            } else if(r.data){
-                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
-            }else{
-                // User isn't authenticated. Redirect to a new Target State
-                def.resolve($state.target('appSimp.login', undefined, { location: true }))
-            }
-        }).catch(e=>{
-            def.resolve($state.target('appSimp.login', undefined, { location: true }))
-        });
-        return def.promise;
-    });
-    // $transitions.onFinish({ to: '*' }, function() {
-    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    // });
-}]);
-app.factory('userFact', function($http) {
-    return {
-        getUser: function() {
-            return $http.get('/user/getUsr').then(function(s) {
-                console.log('getUser in fac says:', s)
-                return s;
-            })
-        }
-    };
-});
 app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
     $http.get('/user/getUsr')
         .then(r => {
@@ -1460,7 +1402,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter) {
         };
     })
 app.controller('forum-cat-cont', function($scope, $http, $state, $location) {
-    if (!localStorage.brethUsr) {
+    if (!localStorage.geoUsr) {
         $state.go('app.login');
         //since we really cannot do anything here if user is NOT logged in
     }
@@ -1566,7 +1508,7 @@ app.controller('forum-cat-cont', function($scope, $http, $state, $location) {
 app.controller('forum-cont', function($scope, $http, $state,$sce) {
     $scope.currMsg = 0;
     $scope.forObj = {};
-    if (!localStorage.brethUsr) {
+    if (!localStorage.geoUsr) {
         $state.go('app.login');
         //since we really cannot do anything here if user is NOT logged in
     }
@@ -1613,7 +1555,7 @@ app.controller('forum-thr-cont', function ($scope, $http, $state, $location, $sc
     $scope.defaultPic = defaultPic;
     $scope.forObj = {};
     $scope.fileName = null
-    if (!localStorage.brethUsr) {
+    if (!localStorage.geoUsr) {
         $state.go('app.login');
         //since we really cannot do anything here if user is NOT logged in
     }
@@ -1747,7 +1689,7 @@ app.controller('inbox-cont',function($scope,$http,userFact){
 app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
     $scope.noWarn = false;
     $scope.nameOkay = true;
-    delete localStorage.brethUsr;
+    delete localStorage.geoUsr;
     $scope.checkTimer = false;
     $scope.goReg = () => {
         $state.go('appSimp.register')
@@ -1773,6 +1715,7 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
         })
     }
     $scope.signin = () => {
+        console.log('trying to login with',$scope.user,$scope.pwd)
         $http.post('/user/login', { user: $scope.user, pass: $scope.pwd })
             .then((r) => {
                 console.log(r);
@@ -1784,10 +1727,10 @@ app.controller('log-cont', function($scope, $http, $state, $q, userFact) {
                     // delete r.data.msgs;
                     console.log('LOGIN RESPONSE',r.data)
                     socket.emit('chatMsg', { msg: `${$scope.user} logged in!` })
+                    localStorage.geoUsr = JSON.stringify(r.data.usr);
                     if(r.data.news){
                         bulmabox.alert('Updates/News',`Since you last logged in, the following updates have been implemented:<br><ul style='list-style:disc;'><li>${r.data.news.join('</li><li>')}</li></ul>`)
                     }
-                    localStorage.brethUsr = JSON.stringify(r.data.usr);
                     $state.go('app.dash');
                 }
             })
@@ -2807,7 +2750,7 @@ app.controller('tool-cont', function($scope, $http, $state, $filter, $sce, $wind
     }
 })
 app.controller('unconf-cont', function($scope, $http, $state) {
-    // $scope.usr = JSON.parse(localStorage.brethUsr).user;
+    // $scope.usr = JSON.parse(localStorage.geoUsr).user;
     $scope.logout = function() {
         $http.get('/user/logout').then(function(r) {
             console.log(r);
@@ -2815,4 +2758,62 @@ app.controller('unconf-cont', function($scope, $http, $state) {
         })
     }
 })
+app.factory('socketFac', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () { 
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
+    $transitions.onBefore({ to: 'app.**' }, function(trans) {
+        let def = $q.defer();
+        console.log('TRANS',trans)
+        const usrCheck = trans.injector().get('userFact')
+        usrCheck.getUser().then(function(r) {
+            console.log('response from login chck',r)
+            if (r.data && r.data.confirmed) {
+                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
+                def.resolve(true)
+            } else if(r.data){
+                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
+            }else{
+                // User isn't authenticated. Redirect to a new Target State
+                def.resolve($state.target('appSimp.login', undefined, { location: true }))
+            }
+        }).catch(e=>{
+            def.resolve($state.target('appSimp.login', undefined, { location: true }))
+        });
+        return def.promise;
+    });
+    // $transitions.onFinish({ to: '*' }, function() {
+    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+    // });
+}]);
+app.factory('userFact', function($http) {
+    return {
+        getUser: function() {
+            return $http.get('/user/getUsr').then(function(s) {
+                console.log('getUser in fac says:', s)
+                return s;
+            })
+        }
+    };
+});
 }());
