@@ -234,64 +234,6 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     // We put the Data URI in the image's src attribute
     img.src = datas;
 }
-app.factory('socketFac', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () { 
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      })
-    }
-  };
-});
-app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
-    $transitions.onBefore({ to: 'app.**' }, function(trans) {
-        let def = $q.defer();
-        console.log('TRANS',trans)
-        const usrCheck = trans.injector().get('userFact')
-        usrCheck.getUser().then(function(r) {
-            console.log('response from login chck',r)
-            if (r.data && r.data.confirmed) {
-                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
-                def.resolve(true)
-            } else if(r.data){
-                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
-            }else{
-                // User isn't authenticated. Redirect to a new Target State
-                def.resolve($state.target('appSimp.login', undefined, { location: true }))
-            }
-        }).catch(e=>{
-            def.resolve($state.target('appSimp.login', undefined, { location: true }))
-        });
-        return def.promise;
-    });
-    // $transitions.onFinish({ to: '*' }, function() {
-    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    // });
-}]);
-app.factory('userFact', function($http) {
-    return {
-        getUser: function() {
-            return $http.get('/user/getUsr').then(function(s) {
-                console.log('getUser in fac says:', s)
-                return s;
-            })
-        }
-    };
-});
 app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
     $http.get('/user/getUsr')
         .then(r => {
@@ -771,8 +713,8 @@ app.controller('cal-cont', function($scope, $http, $state) {
         }
     }
 })
-app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
-    
+app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce) {
+
     $http.get('/user/getUsr')
         .then(r => {
             $scope.doUser(r.data);
@@ -787,18 +729,18 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         $scope.msgs.push({
             time: Date.now(),
             user: 'System',
-            msg: 'Welcome to Hidden Tyria Geographic Society [GEO] Chat! You\'re logged in as ' + u.user + '. Try /wiki or /google to search for stuff! You can also poke anyone online by doing @<user>, where <user> is their username.',
+            msg: 'Welcome to Hidden Tyria Geographic Society [GEO] Chat! You\'re logged in as ' + u.user + '. Try /wiki or /google to search for stuff!<br>You can also poke anyone online by doing @<user>, where <user> is their username.<br>Finally, type /list to see a list of who\'s currently online.',
             isSys: true
         })
     }
-    $scope.parseMsg = (t)=>{
+    $scope.parseMsg = (t) => {
         console.log('in parseMsg', t);
-    	if(t.indexOf('/wiki ')===0){
-    		return `Wiki: <a href="https://wiki.guildwars2.com/wiki/${t.slice(6)}" target="_blank">${t.slice(6)}</a>`
-    	}else if(t.indexOf('/google ')===0){
-    		return `Google: <a href="https://www.google.com/search?q=${t.slice(8)}" target="_blank">${t.slice(8)}</a>`
-    	}
-    	return t;
+        if (t.indexOf('/wiki ') === 0) {
+            return `Wiki: <a href="https://wiki.guildwars2.com/wiki/${t.slice(6)}" target="_blank">${t.slice(6)}</a>`
+        } else if (t.indexOf('/google ') === 0) {
+            return `Google: <a href="https://www.google.com/search?q=${t.slice(8)}" target="_blank">${t.slice(8)}</a>`
+        }
+        return t;
     }
     $http.get('/user/allUsrs')
         .then((au) => {
@@ -806,9 +748,9 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
             console.log('all users is', au)
             $scope.allUsers = au.data;
         });
-    socket.on('chatMsgOut', msg=> {
+    socket.on('chatMsgOut', msg => {
         //recieved a message from backend
-        console.log('before dealing with commands, full message object is',msg);
+        console.log('before dealing with commands, full message object is', msg);
         // var cache = [];
         // let Record = JSON.stringify($scope,function(key, value) {
         //     if (typeof value === 'object' && value !== null) {
@@ -823,11 +765,22 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         // });
         // console.log(Record)
         // console.log($scope.parseMsg(msg.msg),'IS THE MESSAGE')
-        if(typeof msg.msg !=='string'){
+        if (typeof msg.msg !== 'string') {
             return false;
         }
-    	msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
-        $scope.msgs.push(msg);//put this in our list of messages;
+        // socket.on('reqHeartBeat', function (sr) {
+        //     $scope.alsoOnline = sr.filter(q => !$scope.user || !$scope.user.user || $scope.user.user != q.name).map(m => m.name);
+        //     // console.log('Users that are not this user online',$scope.alsoOnline)
+        //     // console.log('$state is',$state)
+        //     if ($scope.user && $scope.user.user && $state.current.name.includes('app.')) {
+        //         socket.emit('hbResp', {
+        //             name: $scope.user.user
+        //         })
+        //     }
+        // })
+
+        msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
+        $scope.msgs.push(msg); //put this in our list of messages;
         if ($scope.msgs.length > 100) {
             $scope.msgs.shift();
         }
@@ -835,7 +788,7 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         //scroll to bottom of chat window? HAO DU
         document.querySelector('#chat-container').scrollTop = document.querySelector('#chat-container').scrollHeight;
     })
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function () {
         $scope.msgs.push({
             time: Date.now(),
             user: 'System',
@@ -853,11 +806,35 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         if (!$scope.newMsg) {
             return false;
         }
-        console.log('Sending chat message',{ user: $scope.user.user, msg: $scope.newMsg })
-        socket.emit('chatMsg', { user: $scope.user.user, msg: $scope.newMsg })
+        if ($scope.newMsg.toLowerCase() == '/list') {
+            let msg = {
+                time: Date.now(),
+                user: 'System',
+                msg: `No other users currently online!`,
+                isSys: true
+            }
+            if($scope.$parent.alsoOnline && $scope.$parent.alsoOnline.length){
+                msg.msg = `Users currently online:<ul>${$scope.$parent.alsoOnline.map(q=>'<li> - '+q+'</li>')}</ul>`
+            }
+            $scope.msgs.push(msg);
+            if ($scope.msgs.length > 100) {
+                $scope.msgs.shift();
+            }
+            $scope.newMsg = '';
+            // return console.log('ONLINE',$scope.$parent.alsoOnline);
+            return false;
+        }
+        console.log('Sending chat message', {
+            user: $scope.user.user,
+            msg: $scope.newMsg
+        })
+        socket.emit('chatMsg', {
+            user: $scope.user.user,
+            msg: $scope.newMsg
+        })
         $scope.newMsg = '';
     }
-    console.log('CHAT SCOPE',$scope);
+    console.log('CHAT SCOPE', $scope);
     // $scope.$onDestroy()
 })
 app.controller('dash-cont', function ($scope, $http, $state, $filter) {
@@ -2843,4 +2820,62 @@ app.controller('unconf-cont', function($scope, $http, $state) {
         })
     }
 })
+app.factory('socketFac', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () { 
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      })
+    }
+  };
+});
+app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact', function($rootScope, $state, $stateParams, $transitions, $q,userFact) {
+    $transitions.onBefore({ to: 'app.**' }, function(trans) {
+        let def = $q.defer();
+        console.log('TRANS',trans)
+        const usrCheck = trans.injector().get('userFact')
+        usrCheck.getUser().then(function(r) {
+            console.log('response from login chck',r)
+            if (r.data && r.data.confirmed) {
+                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
+                def.resolve(true)
+            } else if(r.data){
+                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}))
+            }else{
+                // User isn't authenticated. Redirect to a new Target State
+                def.resolve($state.target('appSimp.login', undefined, { location: true }))
+            }
+        }).catch(e=>{
+            def.resolve($state.target('appSimp.login', undefined, { location: true }))
+        });
+        return def.promise;
+    });
+    // $transitions.onFinish({ to: '*' }, function() {
+    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+    // });
+}]);
+app.factory('userFact', function($http) {
+    return {
+        getUser: function() {
+            return $http.get('/user/getUsr').then(function(s) {
+                console.log('getUser in fac says:', s)
+                return s;
+            })
+        }
+    };
+});
 }());

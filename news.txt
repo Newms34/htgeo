@@ -6,4 +6,5 @@ Sending mail no longer completely crashes the app. U can b frandly again!
 You should now be able to see who's currently online via the Dashboard -> Members tab. A green circle means online; a red one means offline
 Added reply feature! 
 Mail now supports markdown. Make your mails pretty!
-Smol update to chat: typing @<user> (i.e., @Healy) will now flash an icon on that user's tab to show them you've poked them!
+Typing '@<user>' (i.e., @Healy) will now flash an icon on that user's tab to show them you've poked them!
+Typing '/list' in chat will tell you who's currently online.
