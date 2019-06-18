@@ -356,7 +356,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter) {
         Other Info
     </label>
     <p class="control">
-        <textarea class='textarea' id='char-other' placeholder='Any other information you wanna include (optional)'>${chr.other}</textarea>
+        <textarea class='textarea' id='char-other' placeholder='Any other information you wanna include (optional)'>${chr.other||''}</textarea>
     </p>
 </div>`,
                 function (resp) {
