@@ -6,11 +6,38 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
     $scope.user = null;
     userFact.getUser().then(r => {
         $scope.user = r.data;
-        $scope.user.someRandVal = 'potato';
+        // $scope.user.someRandVal = 'potato';
         //user sends their name to back
         socket.emit('hiIm', {
             name: $scope.user.user
         })
+    })
+    $scope.isActive=true;
+    $scope.pokeTimer = null;
+    $scope.faceOpen = false;
+    const baseTitle = 'Hidden Tyria Geographic Society [GEO] Guild Site';
+    window.addEventListener('focus',function(e){
+        $scope.isActive = true;
+        if($scope.pokeTimer){
+            clearInterval($scope.pokeTimer);
+        }
+        document.title = baseTitle;
+    })
+    window.addEventListener('blur',function(e){
+        $scope.isActive = false;
+    })
+    const faces = ['😐','😮',]
+    socket.on('chatMsgOut',(m)=>{
+        //for detecting if someone has mentioned us in chat and w
+        if(m.msg.includes('@'+$scope.user.user) && m.user!=$scope.user.user && !$scope.isActive){
+            // console.log('this user was mentioned in',m)
+            $scope.pokeTimer = setInterval(function(){
+                $scope.faceOpen = !$scope.faceOpen;
+                let pos = $scope.faceOpen?0:1;
+                document.title=faces[pos]+' '+ baseTitle;
+            },250)
+        }
+        // console.log('MESSAGE',m)
     })
     //used to see if this user is still online after a disconnect.
     //also used to see who ELSE is online

@@ -14,7 +14,7 @@ app.controller('chat-cont', function($scope, $http, $state, $filter,$sce) {
         $scope.msgs.push({
             time: Date.now(),
             user: 'System',
-            msg: 'Welcome to Hidden Tyria Geographic Society [GEO] Chat! You\'re logged in as ' + u.user + '. Try /wiki or /google to search for stuff!',
+            msg: 'Welcome to Hidden Tyria Geographic Society [GEO] Chat! You\'re logged in as ' + u.user + '. Try /wiki or /google to search for stuff! You can also poke anyone online by doing @<user>, where <user> is their username.',
             isSys: true
         })
     }
