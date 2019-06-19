@@ -8,7 +8,6 @@ const router = express.Router(),
     passport = require('passport'),
     axios = require('axios'),
     fs = require('fs'),
-    // SparkPost = require('sparkpost'),
     isMod = (req, res, next) => {
         mongoose.model('User').findOne({
             _id: req.session.passport.user
@@ -166,36 +165,50 @@ const routeExp = function (io, pp) {
             })
         })
     })
+    const craftMax = {
+        Armorsmith: 500,
+        Chef: 400,
+        Artificer: 500,
+        Huntsman: 500,
+        Jeweler: 400,
+        Leatherworker: 500,
+        Tailor: 500,
+        Weaponsmith: 500,
+        Scribe: 400
+    }
     router.get('/charsFromAPI', this.authbit, (req, res, next) => {
         if (!req.query.api) {
             res.send('err');
         } else {
-            // axios.get('https://api.guildwars2.com/v2/characters?access_token='+req.query.api,(e,r,b)=>{
-            //     // res.send(b)
-            //     console.log(b);
-            //     const charProms = Array.from(b).map(ch=>axios.get(`https://api.guildwars2.com/v2/characters/${ch}?access_token=${req.query.api}`))
-            //     Promise.all(charProms).then(r=>{
-            //         res.send(r);
-            //     })
-            // })
             axios.get(`https://api.guildwars2.com/v2/characters?access_token=${req.query.api}`)
                 .then(r => {
                     const charProms = Array.from(r.data).map(ch => axios.get(`https://api.guildwars2.com/v2/characters/${ch}?access_token=${req.query.api}`));
-                    console.log(r.data, typeof r.data, charProms)
-                    axios.get(`https://api.guildwars2.com/v2/characters/${r.data[0]}?access_token=${req.query.api}`)
-                        .then(roc => {
-                            console.log('FIRST CHAR', roc)
-                        })
+                    // console.log(r.data, typeof r.data, charProms)
+                    // axios.get(`https://api.guildwars2.com/v2/characters/${r.data[0]}?access_token=${req.query.api}`)
+                    //     .then(roc => {
+                    //         console.log('FIRST CHAR', roc)
+                    //     })
                     axios.all(charProms).then(rc => {
-                        console.log('hi')
+                        // console.log('hi')
                         const allChars = rc.map(rcc => {
+                            let crafts = [];
+                            if (rcc.data.crafting) {
+                                crafts = rcc.data.crafting.filter(ci => !!ci.active).map(q => {
+                                    return {
+                                        cName: q.discipline,
+                                        isMax: !!(q.rating == craftMax[q.discipline])
+                                    }
+                                });
+                            }
                             return {
                                 name: rcc.data.name,
                                 prof: rcc.data.profession,
                                 race: rcc.data.race,
-                                lvl: rcc.data.level
+                                lvl: rcc.data.level,
+                                crafts: crafts
                             }
                         });
+                        // res.send(allChars)
                         mongoose.model('User').findOneAndUpdate({
                             _id: req.session.passport.user
                         }, {
@@ -203,9 +216,9 @@ const routeExp = function (io, pp) {
                                 chars: allChars
                             }
                         }, (errsv, respsv) => {
-                            res.send(respsv)
+                            // res.send(respsv)
+                            res.send(allChars);
                         })
-                        // res.send(allChars);
                     })
                 })
                 .catch(e => {
@@ -218,6 +231,14 @@ const routeExp = function (io, pp) {
         mongoose.model('User').findOne({
             _id: req.session.passport.user
         }, function (err, usr) {
+            //craft stufs;
+            req.body.crafts = [];
+            if(req.body.craftOne.cName && req.body.craftOne.cName!="None"){
+                req.body.crafts.push(_.cloneDeep(req.body.craftOne))
+            }
+            if(req.body.craftTwo.cName && req.body.craftTwo.cName!="None"){
+                req.body.crafts.push(_.cloneDeep(req.body.craftTwo))
+            }
             if (!usr.chars.findOne('name', req.body.name)) {
                 usr.chars.push(req.body)
             }
@@ -231,6 +252,13 @@ const routeExp = function (io, pp) {
             _id: req.session.passport.user
         }, function (err, usr) {
             const charPos = usr.chars.findOne('name', req.body.name);
+            req.body.crafts = [];
+            if(req.body.craftOne.cName && req.body.craftOne.cName!="None"){
+                req.body.crafts.push(_.cloneDeep(req.body.craftOne))
+            }
+            if(req.body.craftTwo.cName && req.body.craftTwo.cName!="None"){
+                req.body.crafts.push(_.cloneDeep(req.body.craftTwo))
+            }
             if (charPos !== false) {
                 usr.chars[charPos] = req.body;
             }
@@ -623,16 +651,16 @@ const routeExp = function (io, pp) {
                     let mtime = new Date(fs.lstatSync('./news.txt').mtime).getTime();
                     // const prevLog = usr.lastLogin || 0;
                     // const prevLog = 0
-                    console.log('TIME DIF: latest news time',mtime,'last login was',uObj.oll,'dif is',mtime-uObj.oll,'Now is',Date.now())
+                    console.log('TIME DIF: latest news time', mtime, 'last login was', uObj.oll, 'dif is', mtime - uObj.oll, 'Now is', Date.now())
                     if ((mtime - uObj.oll) > 1000) {
                         news = lastNews.map(d => d.replace(/\r/, ''));
                     }
-                    usr.pass=null;
-                    usr.salt=null;
-                        res.send({
-                            usr: usr,
-                            news: news,
-                        })
+                    usr.pass = null;
+                    usr.salt = null;
+                    res.send({
+                        usr: usr,
+                        news: news,
+                    })
                 }
                 if (usr.isBanned) {
                     return res.status(403).send('banned');

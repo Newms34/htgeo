@@ -210,74 +210,46 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter) {
         //end admin stuffs
         $scope.races = ['Asura', 'Charr', 'Human', 'Norn', 'Sylvari'];
         $scope.profs = ['Guardian', 'Warrior', 'Revenant', 'Thief', 'Ranger', 'Engineer', 'Elementalist', 'Mesmer', 'Necromancer']
+        $scope.crafts = ["Armorsmith", "Chef", "Artificer", "Huntsman", "Jeweler", "Leatherworker", "Tailor", "Weaponsmith", "Scribe","None"]
+        $scope.addEditCharModal = {
+            active:false,
+            name:null,
+            race:'Asura',
+            prof:'Guardian',
+            craftOne:{
+                cName:"None",
+                isMax:false,
+            },
+            craftTwo:{
+                cName:"None",
+                isMax:false,
+            },
+            lvl:80,
+            other:null,
+            isEdit:false,
+        }
+        $scope.clearAddEditChar = ()=>{
+            $scope.addEditCharModal = {
+                active:false,
+                name:null,
+                race:'Asura',
+                prof:'Guardian',
+                craftOne:{
+                    cName:"None",
+                    isMax:false,
+                },
+                craftTwo:{
+                    cName:"None",
+                    isMax:false,
+                },
+                lvl:80,
+                other:null,
+                isEdit:false,
+            }
+        }
         $scope.addChar = () => {
-            const raceOptList = $scope.races.map(rc => {
-                    return `<label class='char-opt opt-${rc}'><input type='radio' name='char-race' value=${rc} title=${rc}><div></div></label>`
-                }).join(''),
-                profOptList = $scope.profs.map(rc => {
-                    return `<label class='char-opt opt-${rc}'><input type='radio' name='char-prof' value=${rc} title=${rc}><div></div></label>`
-                }).join('');
-            bulmabox.custom('Add a character',
-                `<div class="field">
-    <label class="label">
-        Name
-    </label>
-    <p class="control has-icons-left">
-        <input class="input" type="text" placeholder="Your character's name" id='char-name'>
-        <span class="icon is-small is-left">
-            <i class="fa fa-user"></i>
-        </span>
-    </p>
-</div>
-<div class="field">
-    <label class='label'>
-        Race
-    </label>
-    ${raceOptList}
-</div>
-<div class="field">
-    <label class='label'>
-        Profession
-    </label>
-    ${profOptList}
-</div>
-<div class="field">
-    <label class='label'>
-        Level
-    </label>
-    <p class="control">
-        <input class='input' type='number' id='char-lvl' min='1' max='80' value='80'>
-    </p>
-</div>
-<div class="field">
-    <label class='label'>
-        Other Info
-    </label>
-    <p class="control">
-        <textarea class='textarea' id='char-other' placeholder='Any other information you wanna include (optional)'></textarea>
-    </p>
-</div>`,
-                function () {
-                    const theProf = document.querySelector('input[name=char-prof]:checked'),
-                        theRace = document.querySelector('input[name=char-race]:checked'),
-                        theName = document.querySelector('#char-name');
-                    if (!theProf || !theRace || !theName) {
-                        bulmabox.alert('Needs More Info', 'You need to specify a profession, race, and name! Otherwise we won\'t know who/what you are!');
-                        return false;
-                    }
-                    const char = {
-                        name: document.querySelector('#char-name').value,
-                        prof: document.querySelector('input[name=char-prof]:checked').value,
-                        race: document.querySelector('input[name=char-race]:checked').value,
-                        lvl: document.querySelector('#char-lvl').value,
-                        other: document.querySelector('#char-other').value
-                    }
-                    console.log('User wants to add char', char)
-                    $http.post('/user/addChar', char)
-                        .then((r) => {
-                            $scope.doUser(r.data);
-                        })
-                }, `<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Save</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`)
+            $scope.addEditCharModal.active=true;
+            return false
         }
         $scope.autoChars = () => {
             //B9DE7B9E-9DAD-2C40-BECD-12F9BA931FE0851EA3EB-B1AA-4FBB-B4BE-CCDD28F51644
@@ -308,8 +280,47 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter) {
                 }
             })
         }
+        $scope.addOrEditChar=()=>{
+            console.log('Sending char',$scope.addEditCharModal)
+            if(!$scope.addEditCharModal.name){
+                return bulmabox.alert('No Character Name','You need to tell us what your character\'s name is!')
+            }
+            if($scope.addEditCharModal.isEdit){
+                $http.post('/user/editChar', $scope.addEditCharModal)
+                        .then((r) => {
+                            $scope.clearAddEditChar();
+                            $scope.$digest()
+                            $scope.doUser(r.data);
+                        })
+            }else{
+                $http.post('/user/addChar', $scope.addEditCharModal)
+                        .then((r) => {
+                            $scope.clearAddEditChar();
+                            
+                            $scope.doUser(r.data);
+                        })
+            }
+        }
         $scope.editChar = (chr) => {
-            console.log('usr wants to', chr, Date.now())
+            // console.log('usr wants to', chr, Date.now())
+            $scope.addEditCharModal= {
+                active:true,
+                name:chr.name,
+                race:chr.race,
+                prof:chr.prof,
+                craftOne:{
+                    cName:chr.crafts[0]?chr.crafts[0].cName:'None',
+                    isMax:chr.crafts[0]?chr.crafts[0].isMax:false,
+                },
+                craftTwo:{
+                    cName:chr.crafts[1]?chr.crafts[1].cName:'None',
+                    isMax:chr.crafts[1]?chr.crafts[1].isMax:false,
+                },
+                lvl:chr.lvl,
+                other:chr.other,
+                isEdit:true,
+            }
+            return false;
             const raceOptList = $scope.races.map(rc => {
                     return `<label class='char-opt opt-${rc}'><input type='radio' name='char-race' value=${rc} title=${rc} ${rc==chr.race?'checked':''}><div></div></label>`
                 }).join(''),

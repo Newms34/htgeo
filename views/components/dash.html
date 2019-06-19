@@ -153,6 +153,7 @@
                     <th>Profession</th>
                     <th>Race</th>
                     <th>Level</th>
+                    <th>Crafting</th>
                     <th>Notes</th>
                     <th>&nbsp;</th>
                 </thead>
@@ -166,6 +167,15 @@
                         </td>
                         <td><img src="./img/races/{{chr.race}}.png" class='char-stat-img'>&nbsp;{{chr.race}}</td>
                         <td>{{chr.lvl}}</td>
+                        <td>
+                            <div class="is-fullwidth has-text-grey" ng-if='!chr.crafts.length'>
+                                (This character has no active crafting disciplines!)
+                            </div>
+                            <div class="is-fullwidth" ng-repeat='chrc in chr.crafts'>
+                                <!-- {{chrc}} -->
+                                <span ng-class='{"has-text-grey":!chrc.isMax}'>{{chrc.cName}}</span>
+                            </div>
+                        </td>
                         <td>{{chr.other}}</td>
                         <td>
                             <button class="button is-small is-link" title='Edit' ng-click='editChar(chr)'><i
@@ -356,7 +366,11 @@
                                 <div class='is-fullwidth is-size-7'><img src="./img/races/{{chr.race}}.png"
                                         class='char-stat-img'>&nbsp;{{chr.race}}&nbsp;<img
                                         src="./img/profs/{{chr.prof}}.png"
-                                        class='char-stat-img'>&nbsp;{{chr.prof}}&nbsp;</div>
+                                        class='char-stat-img'>&nbsp;{{chr.prof}}&nbsp;
+                                </div>
+                                <div class='is-fullwidth is-size-7' ng-show='chr.crafts.length'>
+                                    <span style='margin-right:5px;'ng-repeat='c in chr.crafts' title='{{!c.isMax?}}This crafting discipline is not maxed' ng-class='{"has-text-grey":!c.isMax}'>({{c.cName}})</span>
+                                </div>
                                 <div class='is-fullwidth'>
                                     {{chr.name}} ({{chr.lvl}})</div>
                             </div>
@@ -419,6 +433,111 @@
                     </div>
                     <hr>
                     <button class="button is-info" ng-click='clearMsg();'>Okay!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" ng-class='{"is-active":addEditCharModal.active}'>
+        <!-- the modal view-student-exercise window -->
+        <div class="modal-background"></div>
+        <div class="modal-content semi-wide-modal">
+            <div class="panel">
+                <div class="panel-heading has-background-grey-darker has-text-white has-text-weight-bold">
+                    {{addEditCharModal.isEdit?'Edit':'Add'}} Character
+                    <button class="button is-danger is-small is-pulled-right" ng-click='clearAddEditChar()'>x</button>
+                </div>
+                <div class="panel-block has-background-white blocky content">
+                    <br>
+                    <div class="columns is-fullwidth is-multiline">
+                        <br>
+                        <div class="column notification is-dark is-one-fifth">
+                            Name
+                        </div>
+                        <div class="column is-four-fifths">
+                            <p class="control has-icons-left">
+                                <input class="input" type="text" placeholder="Enter your character's name"
+                                    ng-model='addEditCharModal.name'>
+                                <span class="icon is-small is-left">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <hr>
+
+                        <div class="column notification is-dark is-one-fifth">
+                            Race
+                        </div>
+                        <div class="column is-four-fifths">
+                            <label ng-repeat='rc in races' class='char-opt opt-{{rc}}'><input type='radio'
+                                    ng-model='addEditCharModal.race' name='char-race' value='{{rc}}' title='{{rc}}'>
+                                <div></div>
+                            </label>
+                        </div>
+                        <hr>
+                        <div class="column notification is-dark is-one-fifth">
+                            Profession
+                        </div>
+                        <div class="column is-four-fifths">
+                            <label ng-repeat='prf in profs' class='char-opt opt-{{prf}}'><input type='radio'
+                                    ng-model='addEditCharModal.prof' name='char-prof' value='{{prf}}' title='{{prf}}'>
+                                <div></div>
+                            </label>
+                        </div>
+                        <hr>
+                        <div class="column notification is-dark is-one-fifth">
+                            Crafting
+                        </div>
+                        <div class="column is-four-fifths">
+                            <div class="columns">
+                                <div class="column">
+                                    <div class="has-text-weight-bold">
+                                        First Crafting Discipline
+                                    </div>
+                                    <div class="select is-small">
+                                        <select ng-model='addEditCharModal.craftOne.cName'
+                                            ng-options='crft for crft in crafts'>
+                                        </select>
+                                    </div>
+                                    <br>
+                                    <div ng-show='addEditCharModal.craftOne.cName!="None"'>
+                                        <label class="checkbox">
+                                            <input type="checkbox" ng-model='addEditCharModal.craftOne.isMax'> Maxed
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="has-text-weight-bold">
+                                        Second Crafting Discipline
+                                    </div>
+                                    <div class="select is-small">
+                                        <select ng-model='addEditCharModal.craftTwo.cName'
+                                            ng-options='crft for crft in crafts'>
+                                        </select>
+                                    </div>
+                                    <br>
+                                    <div ng-show='addEditCharModal.craftTwo.cName!="None"'>
+                                        <label class="checkbox">
+                                            <input type="checkbox" ng-model='addEditCharModal.craftTwo.isMax'> Maxed
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="column notification is-dark is-one-fifth">
+                            Other Info
+                        </div>
+                        <div class="column is-four-fifths">
+                            <p class="control">
+                                <textarea class='textarea' ng-model='addEditCharModal.other'
+                                    placeholder='Any other information you wanna include (optional)'></textarea>
+                            </p>
+                        </div>
+                        <hr>
+                        <div class="column is-full has-text-centered">
+                            <button class="button is-info is-large" ng-click='addOrEditChar();'>Save</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

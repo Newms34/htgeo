@@ -1,14 +1,8 @@
 const express = require('express'),
     router = express.Router(),
-    path = require('path'),
-    models = require('../../../models/'),
-    async = require('async'),
     mongoose = require('mongoose'),
     multer = require('multer'),
-    session = require('express-session'),
-    maxMsgLen = 50,
     _ = require('lodash'),
-    oid = mongoose.Types.ObjectId,
     cats = ['general', 'missions', 'random', 'management'],
     isMod = (req, res, next) => {
         mongoose.model('User').findOne({ _id: req.session.passport.user }, function(err, usr) {

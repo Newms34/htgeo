@@ -1,11 +1,6 @@
 const express = require('express'),
     router = express.Router(),
-    path = require('path'),
-    models = require('../../../models/'),
-    async = require('async'),
     mongoose = require('mongoose'),
-    session = require('express-session'),
-    maxMsgLen = 50,
     isMod = (req, res, next) => {
         mongoose.model('User').findOne({ _id: req.session.passport.user }, function(err, usr) {
             if (!err && usr.mod) {

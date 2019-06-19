@@ -1,11 +1,7 @@
 const express = require('express');
 const router = express.Router(),
-    path = require('path'),
-    models = require('../../../models/'),
-    async = require('async'),
     _ = require('lodash'),
     mongoose = require('mongoose'),
-    session = require('express-session'),
     axios = require('axios'),
     sendpie = require('sendmail')({
         logger: {

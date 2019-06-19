@@ -1,6 +1,5 @@
 const mongoose = require('mongoose'),
-    crypto = require('crypto'),
-    passportLocalMongoose = require('passport-local-mongoose');
+    crypto = require('crypto');
 
 const usrSchema = new mongoose.Schema({
     user: String, //(user)name of the user,
@@ -31,6 +30,10 @@ const usrSchema = new mongoose.Schema({
         name: String,
         prof: String,
         race: String,
+        crafts:[{
+            cName:String,
+            isMax:Boolean
+        }],
         lvl: {
             type: Number,
             default: 80

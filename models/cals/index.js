@@ -1,5 +1,4 @@
-const mongoose = require('mongoose'),
-    uuid = require('uuid/v4');
+const mongoose = require('mongoose');
 //Each item in vote will last for a certain period of time. After this time is elapsed, it'll either be accepted or rejected.
 const calSchema = new mongoose.Schema({
     title:String,
