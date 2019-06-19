@@ -1,10 +1,6 @@
-Added blogging feature! Only mods can create blog entries
-You can now edit/delete blog entries.
-Both blogs and forum posts now incorporate Markdown
-Re-enabled report feature for forum posts (I can't remember if/why i disabled it!)
-Sending mail no longer completely crashes the app. U can b frandly again!
-You should now be able to see who's currently online via the Dashboard -> Members tab. A green circle means online; a red one means offline
-Added reply feature! 
+Added Reply feature!
 Mail now supports markdown. Make your mails pretty!
+Mail and Forums now support Markdown. 
 Typing '@<user>' (i.e., @Healy) will now flash an icon on that user's tab to show them you've poked them!
 Typing '/list' in chat will tell you who's currently online.
+You can now include crafting disciplines in your char lists.
