@@ -369,7 +369,7 @@
                                         class='char-stat-img'>&nbsp;{{chr.prof}}&nbsp;
                                 </div>
                                 <div class='is-fullwidth is-size-7' ng-show='chr.crafts.length'>
-                                    <span style='margin-right:5px;'ng-repeat='c in chr.crafts' title='{{!c.isMax?}}This crafting discipline is not maxed' ng-class='{"has-text-grey":!c.isMax}'>({{c.cName}})</span>
+                                    <span style='margin-right:5px;'ng-repeat='c in chr.crafts' title='This crafting discipline {{c.isMax?"is":"is not"}} not maxed' ng-class='{"has-text-grey":!c.isMax}'>({{c.cName}})</span>
                                 </div>
                                 <div class='is-fullwidth'>
                                     {{chr.name}} ({{chr.lvl}})</div>
