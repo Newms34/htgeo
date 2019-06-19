@@ -85,6 +85,10 @@ io.on('connection', function(socket) {
         msgObj.randVal = Math.floor(Math.random()*999999).toString(32);
         io.emit('chatMsgOut', msgObj)
     })
+    socket.on('discoMode',function(m){
+        console.log('Setting disco mode to',m.on)
+        io.emit('disco',{on:m.on})
+    })
 });
 server.listen(process.env.PORT || 8080);
 server.on('error', function(err) {

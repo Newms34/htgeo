@@ -399,3 +399,7 @@ $races: Asura Charr Human Norn Sylvari;
 .semi-wide-modal{
     width:70%;
 }
+@keyframes huehue{
+    from{filter:hue-rotate(0deg)}
+    to{filter:hue-rotate(360deg)}
+}

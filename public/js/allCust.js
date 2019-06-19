@@ -824,6 +824,20 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce) {
             // return console.log('ONLINE',$scope.$parent.alsoOnline);
             return false;
         }
+        if ($scope.newMsg.toLowerCase() == '/coloron') {
+            console.log('toggling disco mode!',$scope.$parent)
+            socket.emit('discoMode',{on:true});
+            $scope.newMsg = '';
+            // return console.log('ONLINE',$scope.$parent.alsoOnline);
+            return false;
+        }
+        if ($scope.newMsg.toLowerCase() == '/coloroff') {
+            console.log('toggling disco mode!',$scope.$parent)
+            socket.emit('discoMode',{on:false});
+            $scope.newMsg = '';
+            // return console.log('ONLINE',$scope.$parent.alsoOnline);
+            return false;
+        }
         console.log('Sending chat message', {
             user: $scope.user.user,
             msg: $scope.newMsg
@@ -1913,6 +1927,13 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
             socket.emit('hbResp', {
                 name: $scope.user.user
             })
+        }
+    })
+    socket.on('disco',m=>{
+        if(!m){
+            $scope.col='div:nth-child(even){animation:none;}div:nth-child(odd){animation:none}';
+        }else{
+            $scope.col='div:nth-child(even){animation:huehue 4s linear 2s infinite;}div:nth-child(odd){animation:huehue 4s linear 0s infinite;}'
         }
     })
     // socket.on('allNames',function(r){
