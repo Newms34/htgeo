@@ -11,14 +11,14 @@ Array.prototype.findUser = function (u) {
         }
     }
     return -1;
-}
+};
 let hadDirect = false;
 const dcRedirect = ['$location', '$q', '$injector', function ($location, $q, $injector) {
     //if we get a 401 response, redirect to login
     let currLoc = '';
     return {
         request: function (config) {
-            // console.log('STATE', $injector.get('$state'));
+            // $log.debug('STATE', $injector.get('$state'));
             currLoc = $location.path();
             return config;
         },
@@ -29,7 +29,7 @@ const dcRedirect = ['$location', '$q', '$injector', function ($location, $q, $in
             return result;
         },
         responseError: function (response) {
-            console.log('Something bad happened!', response, currLoc, $location.path())
+            $log.debug('Something bad happened!', response, currLoc, $location.path());
             hadDirect = true;
             bulmabox.alert(`App Restarting`, `Hi! I've made some sort of change just now to make this app more awesome! Unfortunately, this also means I've needed to restart it. I'm gonna log you out now.`, function (r) {
                 fetch('/user/logout')
@@ -37,12 +37,12 @@ const dcRedirect = ['$location', '$q', '$injector', function ($location, $q, $in
                         hadDirect = false;
                         $state.go('appSimp.login', {}, {
                             reload: true
-                        })
+                        });
                         return $q.reject(response);
-                    })
-            })
+                    });
+            });
         }
-    }
+    };
 }];
 app
     .constant('IsDevelopment', window.location.hostname === 'localhost')
@@ -125,7 +125,7 @@ app
             .state('appSimp.err', {
                 url: '/500',
                 templateUrl: 'components/alt/500.html'
-            })
+            });
         //http interceptor stuffs!
         // $httpProvider.interceptors.push(dcRedirect)
     }])
@@ -139,15 +139,15 @@ app
                     const reader = new FileReader(),
                         theFile = changeEvent.target.files[0],
                         tempName = theFile.name;
-                    console.log('UPLOADING FILE', theFile);
+                    $log.debug('UPLOADING FILE', theFile);
                     reader.onload = function (loadEvent) {
                         let theURI = loadEvent.target.result;
-                        console.log('URI before optional resize', theURI, theURI.length)
+                        $log.debug('URI before optional resize', theURI, theURI.length);
                         if (scope.$parent.needsResize) {
                             //needs to resize img (usually for avatar)
                             resizeDataUrl(scope, theURI, scope.$parent.needsResize, scope.$parent.needsResize, tempName);
                         } else {
-                            console.log('APPLYING file to $parent')
+                            $log.debug('APPLYING file to $parent');
                             scope.$apply(function () {
                                 if (scope.$parent && scope.$parent.$parent && scope.$parent.$parent.avas) {
 
@@ -164,7 +164,7 @@ app
                                 }
                             });
                         }
-                    }
+                    };
                     if (!theFile) {
                         scope.$apply(function () {
                             scope.fileread = '';
@@ -174,13 +174,13 @@ app
                         return false;
                     }
                     if (theFile.size > 2500000) {
-                        bulmabox.alert('File too Large', `Your file ${theFile.name} is larger than 2.5MB. Please upload a smaller file!`)
+                        bulmabox.alert('File too Large', `Your file ${theFile.name} is larger than 2.5MB. Please upload a smaller file!`);
                         return false;
                     }
                     reader.readAsDataURL(theFile);
                 });
             }
-        }
+        };
     }]).filter('markdown', ['$sce', function ($sce) {
         return function (md) {
             // const video_id = url.split('v=')[1].split('&')[0];
@@ -198,10 +198,10 @@ Array.prototype.rotate = function (n) {
 };
 Date.prototype.dyMo = function () {
     return (this.getMonth() + 1) + '/' + this.getDate();
-}
+};
 String.prototype.titleCase = function () {
     return this.split(/\s/).map(t => t.slice(0, 1).toUpperCase() + t.slice(1).toLowerCase()).join(' ');
-}
+};
 
 const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
     // We create an image to receive the Data URI
@@ -234,4 +234,26 @@ const resizeDataUrl = (scope, datas, wantedWidth, wantedHeight, tempName) => {
 
     // We put the Data URI in the image's src attribute
     img.src = datas;
+};
+
+app.directive('postrenderAction', postrenderAction);
+
+/* @ngInject */
+function postrenderAction($timeout) {
+    // ### Directive Interface
+    // Defines base properties for the directive.
+    var directive = {
+        restrict: 'A',
+        priority: 101,
+        link: link
+    };
+    return directive;
+
+    // ### Link Function
+    // Provides functionality for the directive during the DOM building/data binding stage.
+    function link(scope, element, attrs) {
+        $timeout(function() {
+            scope.$evalAsync(attrs.postrenderAction);
+        }, 0);
+    }
 }

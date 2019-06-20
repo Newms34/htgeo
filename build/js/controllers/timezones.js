@@ -123,4 +123,4 @@ const timezoneList = [
       "value": 12,
       "text": "(GMT +12:00) Auckland, Wellington, Fiji, Kamchatka"
    }
-]
+];

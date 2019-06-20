@@ -1,4 +1,4 @@
-app.controller('forum-cont', function($scope, $http, $state,$sce) {
+app.controller('forum-cont', function($scope, $http, $state,$sce, $log) {
     $scope.currMsg = 0;
     $scope.forObj = {};
     if (!localStorage.geoUsr) {
@@ -11,15 +11,15 @@ app.controller('forum-cont', function($scope, $http, $state,$sce) {
     $http.get('/forum/cats')
         .then((r) => {
             const forCats = Object.keys(r.data);
-            console.log('CATS',r)
+            $log.debug('CATS',r);
             $scope.forObj = forCats.map(ct => {
                 return {
                     name: ct,
                     count: r.data[ct].n,
                     time: r.data[ct].t > 0 ? new Date(r.data[ct].t) : null
-                }
-            })
-        })
+                };
+            });
+        });
     //search stuffs
     $scope.searchin=false;
     $scope.search = '';
@@ -32,14 +32,14 @@ app.controller('forum-cont', function($scope, $http, $state,$sce) {
             if ($scope.search && $scope.search.length) {
                 $http.post('/forum/searchThr', { term: $scope.search })
                     .then(r => {
-                        console.log('search response', r);
+                        $log.debug('search response', r);
                         $scope.searchResults = r.data;
-                    })
+                    });
             }
-        }, 500)
-    }
+        }, 500);
+    };
     //end search stuff
     $scope.goCat = function(n) {
-        $state.go('app.forumCat', { c: n })
-    }
-})
+        $state.go('app.forumCat', { c: n });
+    };
+});

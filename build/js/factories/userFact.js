@@ -1,10 +1,10 @@
-app.factory('userFact', function($http) {
+app.factory('userFact', function($http,$log) {
     return {
         getUser: function() {
             return $http.get('/user/getUsr').then(function(s) {
-                console.log('getUser in fac says:', s)
+                $log.debug('getUser in fac says:', s);
                 return s;
-            })
+            });
         }
     };
 });

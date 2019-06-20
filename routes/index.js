@@ -14,7 +14,7 @@ module.exports = function(io, pp) {
     // });
     router.get('*', function(req, res, next) {
         // console.log('trying to get main page!')
-        res.sendFile('index.html', { root: './views' })
+        res.sendFile('index.html', { root: './views' });
     });
     router.use(function(req, res) {
         res.status(404).end();
@@ -51,17 +51,17 @@ module.exports = function(io, pp) {
                                 theWinner = usrs[Math.floor(Math.random() * usrs.length)];
                             }
                         } else {
-                            const tempWinner = lto.paid[Math.floor(Math.random() * lto.paid.length)]
+                            const tempWinner = lto.paid[Math.floor(Math.random() * lto.paid.length)];
                             theWinner = usrs.find(uw => uw.user == tempWinner);
                         }
                         if (lto.kind == 'payLotto' && !theWinner) {
-                            lto.text = '<br>Lotto expired without a winner!'
+                            lto.text = '<br>Lotto expired without a winner!';
                         } else {
                             lto.text += '<br>WINNER: ' + theWinner.user;
                             lto.winner = theWinner.user;
                         }
                         lto.expired = true;
-                        lto.save()
+                        lto.save();
                         if (!theWinner) {
                             return false;
                         }
@@ -71,19 +71,18 @@ module.exports = function(io, pp) {
                                 date: Date.now(),
                                 msg: `<h3>Congratulations!</h3>
                                 You've won the event "${lto.title}"! Contact ${lto.user} for further details and to claim your prize(s)!`
-                            })
-                            console.log(usr)
-                            io.emit('refCal', {})
+                            });
+                            io.emit('refCal', {});
                             usr.save(function(err, usr) {
-                                console.log('User updated!', usr, err)
+                                console.log('User updated!', usr, err);
                             });
                         });
-                    })
-                })
+                    });
+                });
             } else {
                 return false; //nothin to do
             }
-        })
+        });
         //sort thru all other events that ARE expired but have not be MARKED as such
         mongoose.model('cal').find({}, function(err, evts) {
             evtsExp = evts.filter(ev => ev.eventDate < now && !ev.expired);
@@ -92,7 +91,7 @@ module.exports = function(io, pp) {
                 e.save();
             });
         });
-    }, 10000)
+    }, 10000);
     //end of cron
     return router;
 };

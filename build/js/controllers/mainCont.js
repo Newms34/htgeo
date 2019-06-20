@@ -1,8 +1,8 @@
 String.prototype.capMe = function () {
     return this.slice(0, 1).toUpperCase() + this.slice(1);
-}
-app.controller('main-cont', function ($scope, $http, $state, userFact) {
-    console.log('main controller registered!')
+}; 
+app.controller('main-cont', function ($scope, $http, $state, userFact, $log) {
+    $log.debug('main controller registered!');
     $scope.user = null;
     userFact.getUser().then(r => {
         $scope.user = r.data;
@@ -10,8 +10,8 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
         //user sends their name to back
         socket.emit('hiIm', {
             name: $scope.user.user
-        })
-    })
+        });
+    }); 
     $scope.isActive=true;
     $scope.pokeTimer = null;
     $scope.faceOpen = false;
@@ -22,45 +22,45 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
             clearInterval($scope.pokeTimer);
         }
         document.title = baseTitle;
-    })
+    });
     window.addEventListener('blur',function(e){
         $scope.isActive = false;
-    })
-    const faces = ['😐','😮',]
+    });
+    const faces = ['😐','😮',];
     socket.on('chatMsgOut',(m)=>{
         //for detecting if someone has mentioned us in chat and w
         if(m.msg.includes('@'+$scope.user.user) && m.user!=$scope.user.user && !$scope.isActive){
-            // console.log('this user was mentioned in',m)
+            // $log.debug('this user was mentioned in',m)
             $scope.pokeTimer = setInterval(function(){
                 $scope.faceOpen = !$scope.faceOpen;
                 let pos = $scope.faceOpen?0:1;
                 document.title=faces[pos]+' '+ baseTitle;
-            },250)
+            },250);
         }
-        // console.log('MESSAGE',m)
-    })
+        // $log.debug('MESSAGE',m)
+    });
     //used to see if this user is still online after a disconnect.
     //also used to see who ELSE is online
     socket.on('reqHeartBeat', function (sr) {
         $scope.alsoOnline = sr.filter(q => !$scope.user || !$scope.user.user || $scope.user.user != q.name).map(m => m.name);
-        // console.log('Users that are not this user online',$scope.alsoOnline)
-        // console.log('$state is',$state)
+        // $log.debug('Users that are not this user online',$scope.alsoOnline)
+        // $log.debug('$state is',$state)
         if ($scope.user && $scope.user.user && $state.current.name.includes('app.')) {
             socket.emit('hbResp', {
                 name: $scope.user.user
-            })
+            });
         }
-    })
+    });
     socket.on('disco',m=>{
         if(!m){
             $scope.col='div:nth-child(even){animation:none;}div:nth-child(odd){animation:none}';
         }else{
-            $scope.col='div:nth-child(even){animation:huehue 4s linear 2s infinite;}div:nth-child(odd){animation:huehue 4s linear 0s infinite;}'
+            $scope.col='div:nth-child(even){animation:huehue 4s linear 2s infinite;}div:nth-child(odd){animation:huehue 4s linear 0s infinite;}';
         }
-    })
+    });
     // socket.on('allNames',function(r){
     // 	$scope.online = r;
-    // 	console.log('users now online are',r)
+    // 	$log.debug('users now online are',r)
     // })
     $scope.explMd = () => {
         bulmabox.alert('Markdown', `<div class='is-size-2'>Markdown</div>
@@ -117,8 +117,8 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
         <td style="text-align:left"><code>look ma, ima programmer!</code></td>
         </tr>
         </tbody>
-        </table>`)
-    }
+        </table>`);
+    };
     $scope.sc = '';
     $scope.seekrit = {
         code: ['arrowup', 'arrowup', 'arrowdown', 'arrowdown', 'arrowleft', 'arrowright', 'arrowleft', 'arrowright', 'b', 'a', 'Space'],
@@ -132,7 +132,7 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
     $scope.fontOpts = ['aurebesh', 'tengwar quenya-1', 'klingon font', 'hieroglyphic', 'dovahkiin', 'Skyrim_Daedra'];
     document.querySelector('body').addEventListener('keyup', function (e) {
         e.preventDefault();
-        // console.log('KEY PRESSED WAS', e)
+        // $log.debug('KEY PRESSED WAS', e)
         if ($scope.seekrit.asking) {
             //asking kweschun, so ignore keypress
             return false;
@@ -167,9 +167,9 @@ app.controller('main-cont', function ($scope, $http, $state, userFact) {
                 }
                 $scope.seekrit.asking = false;
                 $scope.seekrit.corrNum = 0;
-            })
+            });
         } else {
             $scope.seekrit.corrNum++;
         }
-    })
-})
+    });
+});

@@ -1,8 +1,8 @@
-app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
+app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce,$log) {
     $http.get('/user/getUsr')
         .then(r => {
             $scope.doUser(r.data);
-            console.log('user', $scope.user)
+            $log.debug('user', $scope.user);
         });
     $scope.msgs = [];
     $scope.doUser = (u) => {
@@ -15,8 +15,8 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
             user: 'System',
             msg: 'Welcome to Hidden Tyria Geographic Society [GEO] Chat! You\'re logged in as ' + u.user + '. Try /wiki or /google to search for stuff!',
             isSys: true
-        })
-    }
+        });
+    };
     $scope.newBlog = {
         title: null,
         contents: null,
@@ -38,12 +38,12 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         usrLiked: false,
         when: 'A long time ago',
         id: null
-    }]
+    }];
 
     $scope.refBlogs = () => {
         $http.get('/blog/allEntries').then(b => {
             if (!b.data) {
-                throw new Error('no blogs')
+                throw new Error('no blogs');
             }
             $scope.blogEntries = $scope.parseBlogs(b.data);
         }).catch(e => {
@@ -59,9 +59,9 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 usrLiked: false,
                 when: 'A long time ago',
                 _id: null
-            }]
+            }];
         });
-    }
+    };
     $scope.refBlogs();
     $scope.parseBlogs = d => {
         return d.map(di => {
@@ -71,39 +71,39 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
             di.when = new Date(di.date).toLocaleString();
             di.editContents = di.contents;
             return di;
-        })
-    }
+        });
+    };
     $scope.toggleLike = id => {
         $http.get(`/blog/toggleLike?v=${id}`).then(r => {
             let likeTarg = $scope.blogEntries.find(q => q._id == r.data._id);
             likeTarg.likes = r.data.likes;
             likeTarg.usrLiked = r.data.likes.includes($scope.user._id);
             likeTarg.likeNum = r.data.likes.length;
-        })
-    }
+        });
+    };
     $scope.timers = {
         pic: null,
         vid: null
     };
     // document.querySelector('#file-inp').addEventListener('change', $scope.doPic,false)
     $scope.doPic = e => {
-        console.log('EVENT INTO CHANGE', e);
+        $log.debug('EVENT INTO CHANGE', e);
         const reader = new FileReader(),
             canv = document.querySelector('#upl-canv'),
             ctx = canv.getContext("2d");
         reader.onload = function (event) {
             const img = new Image();
             img.onload = function () {
-                console.log(img, img.width)
+                $log.debug(img, img.width);
                 canv.width = img.width;
                 canv.height = img.height;
                 ctx.drawImage(img, 0, 0);
                 $scope.pic = canv.toDataURL();
-            }
+            };
             img.src = event.target.result;
-        }
+        };
         reader.readAsDataURL(e.target.files[0]);
-    }
+    };
     $scope.vidTimer = () => {
         if ($scope.timers.vid) {
             clearTimeout($scope.timers.vid);
@@ -113,15 +113,15 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 if($scope.newBlog.youtubeCand.includes('youtu.be')){
                     //shortUrl: replace with long. Example:
                     //https://youtu.be/hdylEJKNgcs goes to youtube.com/watch?v=hdylEJKNgcs;
-                    $scope.newBlog.youtube = $scope.newBlog.youtubeCand.replace('https://youtu.be/','https://www.youtube.com/watch?v=').replace('youtu.be/','https://www.youtube.com/watch?v=')
+                    $scope.newBlog.youtube = $scope.newBlog.youtubeCand.replace('https://youtu.be/','https://www.youtube.com/watch?v=').replace('youtu.be/','https://www.youtube.com/watch?v=');
                 }else{
                     $scope.newBlog.youtube = $scope.newBlog.youtubeCand;
                 }
             } else {
                 $scope.newBlog.youtube = null;
             }
-        }, 500)
-    }
+        }, 500);
+    };
     $scope.newPost = s => {
         if (!$scope.newBlog.title || !$scope.newBlog.contents) {
             return bulmabox.alert('<i class="fa fa-exclamation-triangle is-size-3"></i>&nbsp;Missing Information', 'Your blog post needs a title and at least some text content!');
@@ -130,7 +130,7 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
         delete nb.picCand;
         delete nb.youtubeCand;
         $http.post('/blog/post', nb).then(r => {
-            // console.log('response from posting new blog:',r)
+            // $log.debug('response from posting new blog:',r)
             $scope.newBlog = {
                 title: null,
                 contents: null,
@@ -138,32 +138,32 @@ app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce) {
                 pic: null,
                 picCand: null,
                 youtubeCand: null
-            }
+            };
             $scope.refBlogs();
-        })
-    }
+        });
+    };
     $scope.editBlog=b=>{
         bulmabox.confirm('Update Blog Text','Are you sure you wanna update your blog post?',c=>{
             if(!!c){
                 $http.put('/blog/post',b).then(r=>{
                     $scope.refBlogs();
-                })
+                });
             }
-        })
-    }
+        });
+    };
     $scope.deleteBlog=b=>{
-        console.log('Attempting to delete blog',b)
+        $log.debug('Attempting to delete blog',b);
         bulmabox.confirm('Delete Blog Post','Are you sure you wanna delete this blog entry?',c=>{
             if(!!c){
                 if(!Object.keys(b)){
-                    console.log('somehow b got emptied!',b)
+                    $log.debug('somehow b got emptied!',b);
                 }
                 $http.delete('/blog/post?id='+b._id).then(r=>{
                     $scope.refBlogs();
-                })
+                });
             }
-        })
-    }
+        });
+    };
 }).directive('customOnChange', function () {
     return {
         restrict: 'A',

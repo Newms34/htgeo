@@ -1,4 +1,4 @@
-<div ng-controller='dash-cont'>
+<div ng-controller='dash-cont' postrender-action="getAll()">
     <!--     ITEMS ON DASHBOARD: admin panel table (list of users, with buttons to ban/unban and make admin. NO button to 'unadmin'). list of chars on this acct msg center -->
     <h3 class='is-size-4 is-full'>Dashboard: {{user.user}}</h3>
     <div class='tabs is-fullwidth is-boxed'>

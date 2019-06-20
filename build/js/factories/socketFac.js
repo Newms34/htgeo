@@ -17,7 +17,7 @@ app.factory('socketFac', function ($rootScope) {
             callback.apply(socket, args);
           }
         });
-      })
+      });
     }
   };
 });
