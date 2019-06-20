@@ -47,9 +47,13 @@ const dcRedirect = ['$location', '$q', '$injector', function ($location, $q, $in
         }
     }
 }];
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+app
+    .constant('IsDevelopment', window.location.hostname === 'localhost')
+    .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', '$compileProvider', '$logProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $compileProvider, $logProvider, IsDevelopment) {
         $locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/404');
+        $compileProvider.debugInfoEnabled(IsDevelopment);
+        $logProvider.debugEnabled(IsDevelopment);
         $stateProvider
             .state('app', {
                 abstract: true,
@@ -65,7 +69,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
             })
             .state('app.chat', {
                 url: '/chat', //default route, if not 404
-                cache:false,
+                cache: false,
                 templateUrl: 'components/chat.html'
             })
             .state('app.calendar', {
@@ -851,7 +855,7 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce) {
     console.log('CHAT SCOPE', $scope);
     // $scope.$onDestroy()
 })
-app.controller('dash-cont', function ($scope, $http, $state, $filter) {
+const derp = app.controller('dash-cont', function ($scope, $http, $state, $filter) {
         $scope.showDups = localStorage.brethDups; //show this user in 'members' list (for testing)
         $http.get('/user/usrData')
             .then(r => {
@@ -1450,6 +1454,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter) {
                     })
             }, 500);
         }
+        // console.log('ANCESTRY! First, SCOPE:',$scope,'\nNow, PARENT',$scope.$parent,'\n And finally, ROOTSCOPE!',$scope.$rootScope)
     })
     .filter('numToDate', function () {
         return function (num) {

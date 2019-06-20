@@ -1,4 +1,4 @@
-app.controller('dash-cont', function ($scope, $http, $state, $filter) {
+const derp = app.controller('dash-cont', function ($scope, $http, $state, $filter) {
         $scope.showDups = localStorage.brethDups; //show this user in 'members' list (for testing)
         $http.get('/user/usrData')
             .then(r => {
@@ -597,6 +597,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter) {
                     })
             }, 500);
         }
+        // console.log('ANCESTRY! First, SCOPE:',$scope,'\nNow, PARENT',$scope.$parent,'\n And finally, ROOTSCOPE!',$scope.$rootScope)
     })
     .filter('numToDate', function () {
         return function (num) {

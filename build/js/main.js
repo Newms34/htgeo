@@ -44,9 +44,13 @@ const dcRedirect = ['$location', '$q', '$injector', function ($location, $q, $in
         }
     }
 }];
-app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider) {
+app
+    .constant('IsDevelopment', window.location.hostname === 'localhost')
+    .config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpProvider', '$compileProvider', '$logProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $httpProvider, $compileProvider, $logProvider, IsDevelopment) {
         $locationProvider.html5Mode(true);
         $urlRouterProvider.otherwise('/404');
+        $compileProvider.debugInfoEnabled(IsDevelopment);
+        $logProvider.debugEnabled(IsDevelopment);
         $stateProvider
             .state('app', {
                 abstract: true,
@@ -62,7 +66,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$httpP
             })
             .state('app.chat', {
                 url: '/chat', //default route, if not 404
-                cache:false,
+                cache: false,
                 templateUrl: 'components/chat.html'
             })
             .state('app.calendar', {
