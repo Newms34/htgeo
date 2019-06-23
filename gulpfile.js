@@ -8,6 +8,7 @@ const jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     gutil = require('gulp-util'),
     rename = require('gulp-rename'),
+    terser = require('gulp-terser'),
     kid = require('child_process'),
     ps = require('ps-node'),
     cleany = require('gulp-clean-css'),
@@ -112,7 +113,8 @@ gulp.task('scripts', function () {
             presets: ['es2015']
         }))
         .pipe(ngAnnotate())
-        .pipe(uglify().on('error', gutil.log))
+        .pipe(terser())
+        // .pipe(uglify({warnings:true}).on('error', gutil.log))
         .pipe(th2.obj((file, enc, cb) => {
             // console.log('FILE IS',file._contents.toString('utf8'),'ENC',enc,'CB',cb);
             let jsEnd = file._contents.toString('utf8').length,

@@ -41,9 +41,6 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
             });
     };
     socket.on('refCal', (e) => {
-        // bulmabox.alert('Refreshing Calendar',`There's been a change to the calendar, so we're refreshing!`,function(r){
-        // $state.go($state.current, {}, { reload: true });
-        // })
         $scope.refCal();
     });
     $scope.refCal();
