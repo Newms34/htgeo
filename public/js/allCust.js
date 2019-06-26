@@ -260,64 +260,6 @@ function postrenderAction($timeout) {
         }, 0);
     }
 }
-app.factory('socketFac', function ($rootScope) {
-  var socket = io.connect();
-  return {
-    on: function (eventName, callback) {
-      socket.on(eventName, function () { 
-        var args = arguments;
-        $rootScope.$apply(function () {
-          callback.apply(socket, args);
-        });
-      });
-    },
-    emit: function (eventName, data, callback) {
-      socket.emit(eventName, data, function () {
-        var args = arguments;
-        $rootScope.$apply(function () {
-          if (callback) {
-            callback.apply(socket, args);
-          }
-        });
-      });
-    }
-  };
-});
-app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact','$log', function($rootScope, $state, $stateParams, $transitions, $q,userFact,$log) {
-    $transitions.onBefore({ to: 'app.**' }, function(trans) {
-        let def = $q.defer();
-        $log.debug('TRANS',trans);
-        const usrCheck = trans.injector().get('userFact');
-        usrCheck.getUser().then(function(r) {
-            $log.debug('response from login chck',r);
-            if (r.data && r.data.confirmed) {
-                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
-                def.resolve(true);
-            } else if(r.data){
-                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}));
-            }else{
-                // User isn't authenticated. Redirect to a new Target State
-                def.resolve($state.target('appSimp.login', undefined, { location: true }));
-            }
-        }).catch(e=>{
-            def.resolve($state.target('appSimp.login', undefined, { location: true }));
-        });
-        return def.promise;
-    });
-    // $transitions.onFinish({ to: '*' }, function() {
-    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
-    // });
-}]);
-app.factory('userFact', function($http,$log) {
-    return {
-        getUser: function() {
-            return $http.get('/user/getUsr').then(function(s) {
-                $log.debug('getUser in fac says:', s);
-                return s;
-            });
-        }
-    };
-});
 app.controller('blog-cont', function ($scope, $http, $state, $filter, $sce,$log) {
     $http.get('/user/getUsr')
         .then(r => {
@@ -590,7 +532,7 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
         let payers = null;
         if (ev.paid && ev.paid.length) {
             payers = `<ul class='ul'>
-                ${ev.paid.map(up=>'<li> - '+up+'</li>').join('')}
+                ${ev.paid.map(up=>'<li>'+up+'</li>').join('')}
             </ul>`;
         }
         bulmabox.alert(`Event: ${ev.title}`, `Time:${new Date(ev.eventDate).toLocaleString()}<br>Type:${$scope.kindOpts.find(k=>k.kind==ev.kind).kindLong}<br>${payers?'Paid Users<br>'+payers:''}<hr> Description: ${ev.text}`);
@@ -698,7 +640,7 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
             let pyusr = document.querySelector('#payusr').value;
             $log.debug('User wishes to add', pyusr);
             $http.post('/cal/lottoPay', { lottoId: ev._id, pusr: pyusr });
-        });
+        },`<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Add</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`);
     };
     $scope.hourOpts = new Array(48).fill(100).map((c, i) => {
         let post = i < 24 ? 'AM' : 'PM',
@@ -2860,6 +2802,64 @@ app.controller('unconf-cont', function($scope, $http, $state, $log) {
             $log.debug(r);
             $state.go('appSimp.login');
         });
+    };
+});
+app.factory('socketFac', function ($rootScope) {
+  var socket = io.connect();
+  return {
+    on: function (eventName, callback) {
+      socket.on(eventName, function () { 
+        var args = arguments;
+        $rootScope.$apply(function () {
+          callback.apply(socket, args);
+        });
+      });
+    },
+    emit: function (eventName, data, callback) {
+      socket.emit(eventName, data, function () {
+        var args = arguments;
+        $rootScope.$apply(function () {
+          if (callback) {
+            callback.apply(socket, args);
+          }
+        });
+      });
+    }
+  };
+});
+app.run(['$rootScope', '$state', '$stateParams', '$transitions', '$q','userFact','$log', function($rootScope, $state, $stateParams, $transitions, $q,userFact,$log) {
+    $transitions.onBefore({ to: 'app.**' }, function(trans) {
+        let def = $q.defer();
+        $log.debug('TRANS',trans);
+        const usrCheck = trans.injector().get('userFact');
+        usrCheck.getUser().then(function(r) {
+            $log.debug('response from login chck',r);
+            if (r.data && r.data.confirmed) {
+                // localStorage.twoRibbonsUser = JSON.stringify(r.user);
+                def.resolve(true);
+            } else if(r.data){
+                def.resolve($state.target('appSimp.unconfirmed',undefined, {location:true}));
+            }else{
+                // User isn't authenticated. Redirect to a new Target State
+                def.resolve($state.target('appSimp.login', undefined, { location: true }));
+            }
+        }).catch(e=>{
+            def.resolve($state.target('appSimp.login', undefined, { location: true }));
+        });
+        return def.promise;
+    });
+    // $transitions.onFinish({ to: '*' }, function() {
+    //     document.body.scrollTop = document.documentElement.scrollTop = 0;
+    // });
+}]);
+app.factory('userFact', function($http,$log) {
+    return {
+        getUser: function() {
+            return $http.get('/user/getUsr').then(function(s) {
+                $log.debug('getUser in fac says:', s);
+                return s;
+            });
+        }
     };
 });
 }());

@@ -86,7 +86,7 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
         let payers = null;
         if (ev.paid && ev.paid.length) {
             payers = `<ul class='ul'>
-                ${ev.paid.map(up=>'<li> - '+up+'</li>').join('')}
+                ${ev.paid.map(up=>'<li>'+up+'</li>').join('')}
             </ul>`;
         }
         bulmabox.alert(`Event: ${ev.title}`, `Time:${new Date(ev.eventDate).toLocaleString()}<br>Type:${$scope.kindOpts.find(k=>k.kind==ev.kind).kindLong}<br>${payers?'Paid Users<br>'+payers:''}<hr> Description: ${ev.text}`);
@@ -194,7 +194,7 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
             let pyusr = document.querySelector('#payusr').value;
             $log.debug('User wishes to add', pyusr);
             $http.post('/cal/lottoPay', { lottoId: ev._id, pusr: pyusr });
-        });
+        },`<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Add</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`);
     };
     $scope.hourOpts = new Array(48).fill(100).map((c, i) => {
         let post = i < 24 ? 'AM' : 'PM',
