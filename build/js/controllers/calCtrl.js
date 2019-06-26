@@ -190,11 +190,14 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
         const lto = $scope.allUsrs.filter(pu => !ev.paid || !ev.paid.length || ev.paid.indexOf(pu) < 0).map(uo => {
             return `<option value='${uo}'>${uo}</option>`;
         }).join(''); //find all users where the event either HAS no paid users, OR the user is not in the list yet.
+        if(!lto.length){
+            return bulmabox.alert('No More Users',`Either all users have paid for this event, or no users are registered! <br>You're logged in, so the second option's pretty much impossible.`)
+        }
         bulmabox.custom('Add Paid User', `Select a user from the list below to add them to this lotto\'s candidates:<br><p class='select'><select id='payusr'>${lto}</select></p>`, function() {
             let pyusr = document.querySelector('#payusr').value;
             $log.debug('User wishes to add', pyusr);
             $http.post('/cal/lottoPay', { lottoId: ev._id, pusr: pyusr });
-        },`<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Add</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`);
+        },`<button class='button is-warning' onclick='bulmabox.runCb(bulmabox.params.cb)'>Add</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`);
     };
     $scope.hourOpts = new Array(48).fill(100).map((c, i) => {
         let post = i < 24 ? 'AM' : 'PM',

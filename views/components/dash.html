@@ -358,7 +358,7 @@
                         <td><img class='usr-list-pic' src="{{u.avatar||defaultPic}}">
                             <br>{{u.user}}</td>
                         <td>
-                            <button class="button is-info is-fullwidth" title='Send a message to this user'
+                            <button class="button is-warning is-fullwidth" title='Send a message to this user'
                                 ng-click='mail(u)'><i class="fa fa-envelope-o"></i></button>
                         </td>
                         <td style='height:150px; {{u.chars.length?"overflow-y: scroll;display:block;":""}} '>
@@ -390,7 +390,7 @@
                                 ng-if='!user.mod && u.mod'></i>
                             <i class='fa fa-square-o' ng-if='!user.mod && !u.isBanned'></i><i
                                 class='fa fa-check-square-o' ng-if='!user.mod && u.isBanned'></i>
-                            <button ng-if='user.mod && !u.confirmed' class='button is-info' ng-click='confirmUsr(u);'>
+                            <button ng-if='user.mod && !u.confirmed' class='button is-warning' ng-click='confirmUsr(u);'>
                                 Confirm User
                             </button>
                         </td>
@@ -432,7 +432,7 @@
 
                     </div>
                     <hr>
-                    <button class="button is-info" ng-click='clearMsg();'>Okay!</button>
+                    <button class="button is-warning" ng-click='clearMsg();'>Okay!</button>
                 </div>
             </div>
         </div>
@@ -535,7 +535,7 @@
                         </div>
                         <hr>
                         <div class="column is-full has-text-centered">
-                            <button class="button is-info is-large" ng-click='addOrEditChar();'>Save</button>
+                            <button class="button is-warning is-large" ng-click='addOrEditChar();'>Save</button>
                         </div>
                     </div>
                 </div>

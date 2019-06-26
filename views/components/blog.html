@@ -19,7 +19,7 @@
                     <div class="is-size-3 has-text-danger">{{be.title}}</div>
                     <div class="is-fullwidth">
                         <button class="button is-danger is-small is-pulled-right" ng-show='user.mod' ng-click='deleteBlog(be)' title='Delete this blog entry'><i class="fa fa-trash"></i></button>
-                        <button class="button is-info is-small is-pulled-right" ng-show='user.mod && !be.editing' ng-click='be.editing=true' title='Edit this blog entry'><i class="fa fa-pencil"></i></button>
+                        <button class="button is-warning is-small is-pulled-right" ng-show='user.mod && !be.editing' ng-click='be.editing=true' title='Edit this blog entry'><i class="fa fa-pencil"></i></button>
                         <div class='content' ng-bind-html='be.contents|markdown'></div>
                         <br>
                         <div class="is-fullwidth notification has-background-grey-darker" ng-show='user.mod && be.editing'>
@@ -107,7 +107,7 @@
                             Picture
                         </div>
                         <div class="column is-four-fifths">
-                            <input type="file" id='file-inp' custom-on-change='doPic' class='button is-info'>
+                            <input type="file" id='file-inp' custom-on-change='doPic' class='button is-warning'>
                             <!-- <input class="input" type="text"
                                         placeholder="Enter the URL of a picture to include (optional)"
                                         ng-model='newBlog.picCand' ng-keyup='picTimer();'> -->

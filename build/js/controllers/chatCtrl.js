@@ -36,33 +36,9 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce, $log
     socket.on('chatMsgOut', msg => {
         //recieved a message from backend
         $log.debug('before dealing with commands, full message object is', msg);
-        // var cache = [];
-        // let Record = JSON.stringify($scope,function(key, value) {
-        //     if (typeof value === 'object' && value !== null) {
-        //         if (cache.indexOf(value) !== -1) {
-        //             // Duplicate reference found, discard key
-        //             return;
-        //         }
-        //         // Store value in our collection
-        //         cache.push(value);
-        //     }
-        //     return value;
-        // });
-        // $log.debug(Record)
-        // $log.debug($scope.parseMsg(msg.msg),'IS THE MESSAGE')
         if (typeof msg.msg !== 'string') {
             return false;
         }
-        // socket.on('reqHeartBeat', function (sr) {
-        //     $scope.alsoOnline = sr.filter(q => !$scope.user || !$scope.user.user || $scope.user.user != q.name).map(m => m.name);
-        //     // $log.debug('Users that are not this user online',$scope.alsoOnline)
-        //     // $log.debug('$state is',$state)
-        //     if ($scope.user && $scope.user.user && $state.current.name.includes('app.')) {
-        //         socket.emit('hbResp', {
-        //             name: $scope.user.user
-        //         })
-        //     }
-        // })
 
         msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
         $scope.msgs.push(msg); //put this in our list of messages;
@@ -133,6 +109,10 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce, $log
         });
         $scope.newMsg = '';
     };
+    window.addEventListener('keypress',e=>{
+        console.log(e.key)
+        // if (e.which=='')
+    })
     $log.debug('CHAT SCOPE', $scope);
     // $scope.$onDestroy()
 });

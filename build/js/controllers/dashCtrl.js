@@ -357,7 +357,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter, $log) {
                         .then((r) => {
                             //done
                         });
-                }, '<button class=\'button is-info\' onclick=\'bulmabox.runCb(bulmabox.params.cb)\'>Send</button><button class=\'button is-danger\' onclick=\'bulmabox.kill("bulmabox-diag")\'>Cancel</button>');
+                }, '<button class=\'button is-warning\' onclick=\'bulmabox.runCb(bulmabox.params.cb)\'>Send</button><button class=\'button is-danger\' onclick=\'bulmabox.kill("bulmabox-diag")\'>Cancel</button>');
         };
         $scope.msgView = {
             active: false,
@@ -391,7 +391,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter, $log) {
             //     }
             // },`
             // <button class='button is-success' onclick="bulmabox.kill('bulmabox-diag')">Okay!</button>
-            // <button class='button is-info' onclick="bulmabox.runCb(bulmabox.params.cb,'reply ${m._id}')"><i class='fa fa-mail-reply'></i>&nbsp;Reply</button>
+            // <button class='button is-warning' onclick="bulmabox.runCb(bulmabox.params.cb,'reply ${m._id}')"><i class='fa fa-mail-reply'></i>&nbsp;Reply</button>
             // <button class='button is-white' onclick="bulmabox.runCb(bulmabox.params.cb,'delete ${m._id}')"><i class='fa fa-trash'></i>&nbsp;Trash</button>
             // <button class='button is-danger' onclick="bulmabox.runCb(bulmabox.params.cb,'report ${m._id}')"><i class='fa fa-exclamation'></i>&nbsp;Report</button>
             // `)

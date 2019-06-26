@@ -636,11 +636,14 @@ app.controller('cal-cont', function($scope, $http, $state, $log) {
         const lto = $scope.allUsrs.filter(pu => !ev.paid || !ev.paid.length || ev.paid.indexOf(pu) < 0).map(uo => {
             return `<option value='${uo}'>${uo}</option>`;
         }).join(''); //find all users where the event either HAS no paid users, OR the user is not in the list yet.
+        if(!lto.length){
+            return bulmabox.alert('No More Users',`Either all users have paid for this event, or no users are registered! <br>You're logged in, so the second option's pretty much impossible.`)
+        }
         bulmabox.custom('Add Paid User', `Select a user from the list below to add them to this lotto\'s candidates:<br><p class='select'><select id='payusr'>${lto}</select></p>`, function() {
             let pyusr = document.querySelector('#payusr').value;
             $log.debug('User wishes to add', pyusr);
             $http.post('/cal/lottoPay', { lottoId: ev._id, pusr: pyusr });
-        },`<button class='button is-info' onclick='bulmabox.runCb(bulmabox.params.cb)'>Add</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`);
+        },`<button class='button is-warning' onclick='bulmabox.runCb(bulmabox.params.cb)'>Add</button><button class='button is-danger' onclick='bulmabox.kill("bulmabox-diag")'>Cancel</button>`);
     };
     $scope.hourOpts = new Array(48).fill(100).map((c, i) => {
         let post = i < 24 ? 'AM' : 'PM',
@@ -774,33 +777,9 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce, $log
     socket.on('chatMsgOut', msg => {
         //recieved a message from backend
         $log.debug('before dealing with commands, full message object is', msg);
-        // var cache = [];
-        // let Record = JSON.stringify($scope,function(key, value) {
-        //     if (typeof value === 'object' && value !== null) {
-        //         if (cache.indexOf(value) !== -1) {
-        //             // Duplicate reference found, discard key
-        //             return;
-        //         }
-        //         // Store value in our collection
-        //         cache.push(value);
-        //     }
-        //     return value;
-        // });
-        // $log.debug(Record)
-        // $log.debug($scope.parseMsg(msg.msg),'IS THE MESSAGE')
         if (typeof msg.msg !== 'string') {
             return false;
         }
-        // socket.on('reqHeartBeat', function (sr) {
-        //     $scope.alsoOnline = sr.filter(q => !$scope.user || !$scope.user.user || $scope.user.user != q.name).map(m => m.name);
-        //     // $log.debug('Users that are not this user online',$scope.alsoOnline)
-        //     // $log.debug('$state is',$state)
-        //     if ($scope.user && $scope.user.user && $state.current.name.includes('app.')) {
-        //         socket.emit('hbResp', {
-        //             name: $scope.user.user
-        //         })
-        //     }
-        // })
 
         msg.msg = $sce.trustAsHtml($scope.parseMsg(msg.msg));
         $scope.msgs.push(msg); //put this in our list of messages;
@@ -871,6 +850,10 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce, $log
         });
         $scope.newMsg = '';
     };
+    window.addEventListener('keypress',e=>{
+        console.log(e.key)
+        // if (e.which=='')
+    })
     $log.debug('CHAT SCOPE', $scope);
     // $scope.$onDestroy()
 });
@@ -1233,7 +1216,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter, $log) {
                         .then((r) => {
                             //done
                         });
-                }, '<button class=\'button is-info\' onclick=\'bulmabox.runCb(bulmabox.params.cb)\'>Send</button><button class=\'button is-danger\' onclick=\'bulmabox.kill("bulmabox-diag")\'>Cancel</button>');
+                }, '<button class=\'button is-warning\' onclick=\'bulmabox.runCb(bulmabox.params.cb)\'>Send</button><button class=\'button is-danger\' onclick=\'bulmabox.kill("bulmabox-diag")\'>Cancel</button>');
         };
         $scope.msgView = {
             active: false,
@@ -1267,7 +1250,7 @@ app.controller('dash-cont', function ($scope, $http, $state, $filter, $log) {
             //     }
             // },`
             // <button class='button is-success' onclick="bulmabox.kill('bulmabox-diag')">Okay!</button>
-            // <button class='button is-info' onclick="bulmabox.runCb(bulmabox.params.cb,'reply ${m._id}')"><i class='fa fa-mail-reply'></i>&nbsp;Reply</button>
+            // <button class='button is-warning' onclick="bulmabox.runCb(bulmabox.params.cb,'reply ${m._id}')"><i class='fa fa-mail-reply'></i>&nbsp;Reply</button>
             // <button class='button is-white' onclick="bulmabox.runCb(bulmabox.params.cb,'delete ${m._id}')"><i class='fa fa-trash'></i>&nbsp;Trash</button>
             // <button class='button is-danger' onclick="bulmabox.runCb(bulmabox.params.cb,'report ${m._id}')"><i class='fa fa-exclamation'></i>&nbsp;Report</button>
             // `)
