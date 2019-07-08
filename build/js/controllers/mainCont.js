@@ -52,11 +52,12 @@ app.controller('main-cont', function ($scope, $http, $state, userFact, $log) {
         }
     });
     socket.on('disco',m=>{
-        if(!m){
+        if(!m.on){
             $scope.col='div:nth-child(even){animation:none;}div:nth-child(odd){animation:none}';
         }else{
             $scope.col='div:nth-child(even){animation:huehue 4s linear 2s infinite;}div:nth-child(odd){animation:huehue 4s linear 0s infinite;}';
         }
+        $scope.$apply();
     });
     // socket.on('allNames',function(r){
     // 	$scope.online = r;

@@ -9,9 +9,14 @@
             <br>
             <br>
             <form class='is-fullwidth columns' style='height:10%'>
-                <input class="column input" type='text' ng-model='newMsg' style='width:90%;flex:none;'></input>
-                <button class="column button is-light" ng-click='sendChat()' type='submit' style='width:10%;flex:none;'>Send</button>
-            </form>
+                <div class="column is-four-fifths">
+                    <input class="input" type='text' ng-model='newMsg' style='' id='chat-inp'></input>
+                </div>
+                <div class="column is-one-fifth">
+
+                    <button class="button is-warning" ng-click='sendChat()' type='submit'>Send</button>
+                </div>
+                </form>
         </div>
     </div>
 </div>

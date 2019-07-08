@@ -110,8 +110,12 @@ app.controller('chat-cont', function ($scope, $http, $state, $filter, $sce, $log
         $scope.newMsg = '';
     };
     window.addEventListener('keypress',e=>{
-        console.log(e.key)
         // if (e.which=='')
+        if(e.key.toLowerCase()=='enter' && (!document.activeElement||document.activeElement.id!='chat-inp')){
+            document.getElementById('chat-inp').focus();
+        }else if(e.key.toLocaleLowerCase()=='enter'){
+            document.body.focus();
+        }
     })
     $log.debug('CHAT SCOPE', $scope);
     // $scope.$onDestroy()

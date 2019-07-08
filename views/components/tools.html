@@ -82,6 +82,7 @@
                 <thead>
                     <tr class='has-text-white'>
                         <th>Type</th>
+                        <!-- <th>Item ID</th> -->
                         <th>T5 Material</th>
                         <th>T6 Material</th>
                         <th>Min Profit</th>
@@ -92,12 +93,34 @@
                 <tbody>
                     <tr class='has-text-white' ng-repeat='mat in prices|filter: isMat'>
                         <td>{{mat.sName.slice(2).titleCase()}}</td>
+                        <!-- <td>{{mat}}</td> -->
                         <td>
-                            <div class='is-fullwidth'>{{mat.t5.lName}}</div>
-                            <img src="{{mat.t5.pic}}"></td>
+                            <div class="columns is-multiline">
+                                <div class='column is-full is-size-6'>{{mat.t5.lName}}</div>
+                                <div class="column is-full">
+                                    <img src="{{mat.t5.pic}}">
+                                </div>
+                                <div class="column is-full">
+                                    <a class="button is-small is-warning" title='View recipes for {{mat.t5.lName}}' href='https://www.gw2spidy.com/item/{{mat.t5.id}}' target='_blank'>
+                                        <i class="fa fa-list-alt"></i>&nbsp;Recipes
+                                    </a>
+                                </div>
+                            </div>
+                        </td>
                         <td>
-                            <div class='is-fullwidth'>{{mat.lName}}</div>
-                            <img src="{{mat.pic}}"></td>
+                         
+                            <div class="columns is-multiline">
+                                    <div class='column is-full is-size-6'>{{mat.lName}}</div>
+                                    <div class="column is-full">
+                                        <img src="{{mat.pic}}">
+                                    </div>
+                                    <div class="column is-full">
+                                        <a class="button is-small is-warning" title='View recipes for {{mat.lName}}' href='https://www.gw2spidy.com/item/{{mat.id}}' target='_blank'>
+                                            <i class="fa fa-list-alt"></i>&nbsp;Recipes
+                                        </a>
+                                    </div>
+                                </div>
+                        </td>
                         <td>{{mat.loProf}}</td>
                         <td>{{mat.hiProf}}</td>
                         <td title="{{mat.profGood==1?'Upgrade this material!':(mat.profGood==-1?'Don&rsquo;t upgrade this material!':'Upgrading this material may or may not return a profit!')}}" style="color:{{mat.profGood==1?'#afa':(mat.profGood==-1?'#faa':'#ffa')}};"><i class="fa fa-{{mat.profGood==1?'thumbs-up':(mat.profGood==-1?'thumbs-down':'exclamation-triangle')}} is-size-3"></i></td>
@@ -202,11 +225,31 @@
                     <tr class='has-text-white' ng-repeat='core in prices|filter: isGem'>
                         <td>{{core.sName.slice(1).titleCase()}}</td>
                         <td>
-                            <div class='is-fullwidth'>{{core.c.lName}}</div>
-                            <img src="{{core.c.pic}}"></td>
+                            <div class="columns is-multiline">
+                                    <div class='column is-full is-size-6'>{{core.c.lName}}</div>
+                                    <div class="column is-full">
+                                        <img src="{{core.c.pic}}">
+                                    </div>
+                                    <div class="column is-full">
+                                        <a class="button is-small is-warning" title='View recipes for {{core.c.lName}}' href='https://www.gw2spidy.com/item/{{core.c.id}}' target='_blank'>
+                                            <i class="fa fa-list-alt"></i>&nbsp;Recipes
+                                        </a>
+                                    </div>
+                                </div>
+                        </td>
                         <td>
-                            <div class='is-fullwidth'>{{core.lName}}</div>
-                            <img src="{{core.pic}}"></td>
+                            <div class="columns is-multiline">
+                                    <div class='column is-full is-size-6'>{{core.lName}}</div>
+                                    <div class="column is-full">
+                                        <img src="{{core.pic}}">
+                                    </div>
+                                    <div class="column is-full">
+                                        <a class="button is-small is-warning" title='View recipes for {{core.lName}}' href='https://www.gw2spidy.com/item/{{core.id}}' target='_blank'>
+                                            <i class="fa fa-list-alt"></i>&nbsp;Recipes
+                                        </a>
+                                    </div>
+                                </div>
+                        </td>
                         <td>{{core.loProf}}</td>
                         <td>{{core.hiProf}}</td>
                         <td title="{{core.profGood==1?'Upgrade this core!':(core.profGood==-1?'Don&rsquo;t upgrade this core!':'Upgrading this core may or may not return a profit!')}}" style="color:{{core.profGood==1?'#afa':(core.profGood==-1?'#faa':'#ffa')}};"><i class="fa fa-{{core.profGood==1?'thumbs-up':(core.profGood==-1?'thumbs-down':'exclamation-triangle')}} is-size-3"></i></td>
